@@ -97,6 +97,68 @@ public class Board {
         }
     }
 
-    //Métodos que faltan de juego: hasEdge(x,y)?, saveBoard, loadBoard, hashCode
+    public boolean hasEdge(int x, int y, DIRECTIONS dir){
+        switch(dir){
+            case TOP:
+                return matrix[x][y].top;
+            case LEFT:
+                return matrix[x][y].left;
+            case RIGHT:
+                return matrix[x][y].right;
+            case BOTTOM:
+                return matrix[x][y].bottom;
+        }
+        return false;
+    }
+
+    public void asciiPrintBoard(){
+        String[] aux = new String[size];
+        for (int i = 0; i < aux.length; i++) {
+            aux[i] = "";
+        }
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                //Top layer
+                for (int k = 0; k < size; k++) {
+                    if(matrix[i][j].top){
+                        aux[0] += "1 ";
+                    }else{
+                        aux[0] += "0 ";
+                    }
+                }
+                aux[0] += " ";
+                //Middle layer
+                if(matrix[i][j].left){
+                    aux[1] += "1 ";
+                }else{
+                    aux[1] += "0 ";
+                }
+                aux[1] += matrix[i][j].color + " ";
+                if(matrix[i][j].right){
+                    aux[1] += "1 ";
+                }else{
+                    aux[1] += "0 ";
+                }
+                aux[1] += " ";
+                //Bottom layer
+                for (int k = 0; k < size; k++) {
+                    if(matrix[i][j].bottom){
+                        aux[2] += "1 ";
+                    }else{
+                        aux[2] += "0 ";
+                    }
+                }
+                aux[2] += " ";
+            }
+            for (int t = 0; t < aux.length; t++) {
+                System.out.println(aux[t]);
+                aux[t] = "";
+            }
+            System.out.println();
+            System.out.println("-------------------------");
+        }
+    }
+
+    //Métodos que faltan de juego: saveBoard, loadBoard, hashCode
     //Métodos que faltan de IA: existChain, createChain, Heuristic
 }
