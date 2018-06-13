@@ -29,6 +29,14 @@ public class BoardTest {
     }
 
     @Test
+    public void addEdgeToExistingEdgeTest(){
+        excep.expect(RuntimeException.class);
+        excep.expectMessage("already an edge");
+        b.addEdge(0,0, Board.DIRECTIONS.TOP);
+        b.addEdge(0,0, Board.DIRECTIONS.TOP);
+    }
+
+    @Test
     public void squareSharedBooleanEdgeCorrectness(){
         excep.expect(RuntimeException.class);
         excep.expectMessage("already an edge");
@@ -36,13 +44,28 @@ public class BoardTest {
         b.addEdge(0, 1, Board.DIRECTIONS.LEFT);
     }
 
-
     @Test
-    public void addEgdeToExistingEdgeTest(){
+    public void squareSharedBooleanEdgeCorrectness2(){
         excep.expect(RuntimeException.class);
         excep.expectMessage("already an edge");
-        b.addEdge(0,0, Board.DIRECTIONS.TOP);
-        b.addEdge(0,0, Board.DIRECTIONS.TOP);
+        b.addEdge(0,1, Board.DIRECTIONS.BOTTOM);
+        b.addEdge(1, 1, Board.DIRECTIONS.TOP);
+    }
+
+    @Test
+    public void squareSharedBooleanEdgeCorrectness3(){
+        excep.expect(RuntimeException.class);
+        excep.expectMessage("already an edge");
+        b.addEdge(1,1, Board.DIRECTIONS.TOP);
+        b.addEdge(0, 1, Board.DIRECTIONS.BOTTOM);
+    }
+
+    @Test
+    public void squareSharedBooleanEdgeCorrectness4(){
+        excep.expect(RuntimeException.class);
+        excep.expectMessage("already an edge");
+        b.addEdge(1, 1, Board.DIRECTIONS.LEFT);
+        b.addEdge(1,0, Board.DIRECTIONS.RIGHT);
     }
 
     @Test
@@ -84,6 +107,41 @@ public class BoardTest {
         }
         assertFalse(b.hasRemainingPlays());
     }
+
+    //Heuristic Tests
+
+    @Test
+    public void evaluateTest0(){
+        assertEquals(0, b.numberOfCapturableBoxes());
+    }
+
+    @Test
+    public void evaluateTest1(){
+        b.addEdge(0,0, Board.DIRECTIONS.TOP);
+        b.addEdge(0,0, Board.DIRECTIONS.LEFT);
+        b.addEdge(0,0, Board.DIRECTIONS.RIGHT);
+        b.addEdge(1,0, Board.DIRECTIONS.LEFT);
+        b.addEdge(1,1, Board.DIRECTIONS.BOTTOM);
+        b.addEdge(0,1, Board.DIRECTIONS.BOTTOM);
+        assertEquals(1, b.numberOfCapturableBoxes());
+    }
+
+    @Test
+    public void evaluateTest2(){
+        Board b2 = new Board(2);
+        b2.addEdge(0,0, Board.DIRECTIONS.TOP);
+        b2.addEdge(0,0, Board.DIRECTIONS.LEFT);
+        b2.addEdge(0,0, Board.DIRECTIONS.RIGHT);
+        b2.addEdge(1,0, Board.DIRECTIONS.LEFT);
+        b2.addEdge(0,1, Board.DIRECTIONS.BOTTOM);
+        b2.addEdge(1,1, Board.DIRECTIONS.BOTTOM);
+        b2.addEdge(1,1, Board.DIRECTIONS.RIGHT);
+        b2.asciiPrintBoard();
+        assertEquals(3, b2.numberOfCapturableBoxes());
+    }
+
+
+
 
     //Chain stuff
 

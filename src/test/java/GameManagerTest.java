@@ -31,6 +31,7 @@ public class GameManagerTest {
         gm.move(0,0, Board.DIRECTIONS.TOP);
         gm.move(0,0, Board.DIRECTIONS.RIGHT);
         gm.move(0,0, Board.DIRECTIONS.BOTTOM);
+        gm.move(0,2, Board.DIRECTIONS.LEFT);
         gm.move(0,0, Board.DIRECTIONS.LEFT);
     }
 

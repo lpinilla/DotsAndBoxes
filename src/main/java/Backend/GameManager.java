@@ -10,9 +10,12 @@ public class GameManager {
         }
     }
 
+    enum GAME_STATUS { PLAYING, OVER};
+
     private Player activePlayer;
     private Player[] players;
     private Board b;
+    private  GAME_STATUS gameStatus;
 
     public GameManager(){
         int size = 3;
@@ -21,6 +24,7 @@ public class GameManager {
         players[0] = new Player(1);
         players[1] = new Player(2);
         activePlayer = players[0];
+        gameStatus = GAME_STATUS.PLAYING;
     }
 
     //TODO:change name of exception
@@ -32,7 +36,19 @@ public class GameManager {
             this.activePlayer.score++;
         }
         changeTurn();
-        b.asciiPrintBoard();
+        b.asciiPrintBoard(); //temporary
+        checkIfIsGameOver();
+    }
+
+    private void checkIfIsGameOver(){
+        if(!b.hasRemainingPlays()){
+            gameStatus = GAME_STATUS.OVER;
+            gameOver();
+        }
+    }
+
+    public void gameOver(){
+        //do something
     }
 
     public Player getCurrentPlayer(){
@@ -45,5 +61,9 @@ public class GameManager {
         }else{
             activePlayer = players[0];
         }
+    }
+
+    public Board getBoard(){
+        return this.b;
     }
 }

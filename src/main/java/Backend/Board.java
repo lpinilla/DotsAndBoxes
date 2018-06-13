@@ -1,20 +1,24 @@
 package Backend;
 
+import java.util.Set;
+import java.util.TreeSet;
+
 public class Board {
 
     //maxPlays indica la cantidad máxima de jugadas posibles.
     //currPlay indica cuantas jugadas se hicieron.
-    private int size, maxPlays, currPlay;
+    public int size;
+    private int maxPlays, currPlay;
 
     public enum DIRECTIONS  { TOP, RIGHT, BOTTOM, LEFT}
 
     private class Box{
-        int color;
+        int color, nOfEdges;
         Boolean left,right, top, bottom;
 
         Box(Boolean left, Boolean right,
                    Boolean top, Boolean bottom){
-            color = 0;
+            color = nOfEdges = 0;
             this.left = left;
             this.right = right;
             this.top = top;
@@ -24,7 +28,7 @@ public class Board {
 
     private Box[][] matrix;
 
-    //constructor para tablero vacío, n indica la cantidad de puntos
+    //constructor para tablero vacío, n indica la cantidad de cuadrados
     public Board(int n){
         if(n <= 0) throw new IllegalArgumentException("Zero or negative values not allowed");
         this.size = n;
@@ -46,6 +50,7 @@ public class Board {
                 matrix[x][y].top = true;
                 if( (x-1) >= 0){
                     matrix[x-1][y].bottom = true;
+                    matrix[x-1][y].nOfEdges++;
                 }
                 break;
             case RIGHT:
@@ -53,6 +58,7 @@ public class Board {
                 matrix[x][y].right = true;
                 if( (y+1) < size){
                     matrix[x][y+1].left = true;
+                    matrix[x][y+1].nOfEdges++;
                 }
                 break;
             case BOTTOM:
@@ -60,6 +66,7 @@ public class Board {
                 matrix[x][y].bottom = true;
                 if( (x+1) < size){
                     matrix[x+1][y].top = true;
+                    matrix[x+1][y].nOfEdges++;
                 }
                 break;
             case LEFT:
@@ -67,10 +74,12 @@ public class Board {
                 matrix[x][y].left = true;
                 if( (y-1) >= 0){
                     matrix[x][y-1].right = true;
+                    matrix[x][y-1].nOfEdges++;
                 }
                 break;
         }
         currPlay++;
+        matrix[x][y].nOfEdges++;
     }
 
     //Metodo para saber si todavía hay jugadas por hacer.
@@ -111,15 +120,83 @@ public class Board {
         return false;
     }
 
+    public int numberOfCapturableBoxes(){
+        int ret = 0;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if(matrix[i][j].nOfEdges == 3){
+                    ret++;
+                }
+                //Si tengo 2 o más vecinos con #e == 3 -> soy capturable
+                if(matrix[i][j].nOfEdges == 1){
+                    if(degree3Neighbors(i,j) > 1){
+                        ret++;
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+
+    private int degree3Neighbors(int x, int y){
+        int count = 0;
+        if( (x-1) >= 0 && matrix[x-1][y].nOfEdges == 3){
+                count++;
+        }
+        if( (x+1) < size && matrix[x+1][y].nOfEdges == 3){
+            count++;
+        }
+        if( (y-1) >= 0 && matrix[x][y-1].nOfEdges == 3){
+            count++;
+        }
+        if( (y+1) < size && matrix[x][y+1].nOfEdges == 3){
+            count++;
+        }
+        return count;
+    }
+
+    private Box[][] getMatrix(){
+        return this.matrix;
+    }
+
+    //tal vez pueda usar esto para loadGame
+    private void setMatrix(Box[][] m){
+        this.matrix = m;
+    }
+
+    private Board cloneBoard(){
+        Board aux = new Board(this.size);
+        aux.setMatrix(this.getMatrix().clone());
+        return aux;
+    }
+
+    //Devuelve un conjunto con todas las posibles jugadas
+    public Set<Board> getPossibleMoves(){
+        Set<Board> ret = new TreeSet<>();
+        Board aux = null;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                for(DIRECTIONS dir: DIRECTIONS.values()){ //se puede optimizar acá
+                    if(!hasEdge(i,j,dir)){
+                        aux = this.cloneBoard();
+                        aux.addEdge(i,j,dir);
+                        ret.add(aux);
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+
     public void asciiPrintBoard(){
-        String[] aux = new String[size];
+        String[] aux = new String[3];
         for (int i = 0; i < aux.length; i++) {
             aux[i] = "";
         }
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 //Top layer
-                for (int k = 0; k < size; k++) {
+                for (int k = 0; k < 3; k++) {
                     if(matrix[i][j].top){
                         aux[0] += "1 ";
                     }else{
@@ -141,7 +218,7 @@ public class Board {
                 }
                 aux[1] += " ";
                 //Bottom layer
-                for (int k = 0; k < size; k++) {
+                for (int k = 0; k < 3; k++) {
                     if(matrix[i][j].bottom){
                         aux[2] += "1 ";
                     }else{
@@ -155,8 +232,9 @@ public class Board {
                 aux[t] = "";
             }
             System.out.println();
-            System.out.println("-------------------------");
+
         }
+        System.out.println("-------------------------");
     }
 
     //Métodos que faltan de juego: saveBoard, loadBoard, hashCode
