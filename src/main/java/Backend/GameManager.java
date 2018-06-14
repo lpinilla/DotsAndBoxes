@@ -4,13 +4,13 @@ public class GameManager {
 
     private class Player{
         private int color, score;
-        public Player(int color){
+        Player(int color){
             this.color = color;
             this.score = 0;
         }
     }
 
-    enum GAME_STATUS { PLAYING, OVER};
+    enum GAME_STATUS { PLAYING, OVER}
 
     private Player activePlayer;
     private Player[] players;
@@ -29,11 +29,8 @@ public class GameManager {
 
     //TODO:change name of exception
     public void move(int x, int y, Board.DIRECTIONS dir){
-        if(!b.hasRemainingPlays()) throw new RuntimeException("No more plays");
-        b.addEdge(x,y, dir);
-        if(b.isSquareFilled(x,y)){
-            b.colorBox(x,y, activePlayer.color);
-            this.activePlayer.score++;
+        if(b.makeMove(x,y, dir, activePlayer.color)){
+            activePlayer.score++;
         }
         changeTurn();
         b.asciiPrintBoard(); //temporary

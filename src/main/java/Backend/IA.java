@@ -3,9 +3,9 @@ package Backend;
 public class IA {
 
     public enum Mode { DEPTH, TIME}
-    Board b;
-    Mode activeMode;
-    int maxDepth;
+    private Board b;
+    private Mode activeMode;
+    private int maxDepth;
 
     public IA(Board b, Mode m, int maxDepth){
         this.b = b;
@@ -16,23 +16,31 @@ public class IA {
     }
 
     public void miniMax(){
-        /*if(activeMode == Mode.DEPTH){
-            dMinimax();
+        if(activeMode == Mode.DEPTH){
+            b = depthMinimax(); //no creo que funcione así tan directo
         }else{
             tMinimax();
-        }*/
+        }
     }
 
 
     //Evaluates the board
-    //first approach to heruristic
-    public int evaluate(Board b){
-        int boxesICanCapture = b.numberOfCapturableBoxes();
-        return boxesICanCapture;
+    //first approach to heuristic
+    private int evaluate(Board b){
+        return b.numberOfCapturableBoxes();
     }
 
-    public int depthMinimax(){
-        return dMinimax(b, 0, maxDepth, true);
+    public Board depthMinimax() {
+        Board bestMove = null;
+        int bestVal = Integer.MIN_VALUE, aux;
+        for (Board move : b.getPossibleMoves(2)) { //TODO:muy hardcodeado
+            aux = dMinimax(move, 0, maxDepth, true);
+            if (aux > bestVal) {
+                bestVal = aux;
+                bestMove = move;
+            }
+        }
+        return bestMove;
     }
 
     private int dMinimax(Board b, int currDepth, int maxDepth, boolean isMax){
@@ -42,17 +50,26 @@ public class IA {
         int bestVal, aux;
         if(isMax) {
             bestVal = Integer.MIN_VALUE;
-            for (Board nBoard : b.getPossibleMoves()) {
-                aux = dMinimax(b, currDepth + 1, maxDepth, false);
-                bestVal = Math.max(bestVal, aux);
+            for (Board nBoard : b.getPossibleMoves(2)) {
+                aux = dMinimax(nBoard, currDepth + 1, maxDepth, false);
+                if(bestVal < aux){
+                    bestVal = aux;
+                }
             }
             return bestVal;
         }
         bestVal = Integer.MAX_VALUE;
         for(Board nBoard : b.getPossibleMoves()) {
-            aux = dMinimax(b, currDepth + 1, maxDepth, true);
-            bestVal = Math.min(bestVal, aux);
+            aux = dMinimax(nBoard, currDepth + 1, maxDepth, true);
+            if(bestVal > aux){
+                bestVal = aux;
+            }
         }
         return bestVal;
+    }
+
+    //Tiene que hacer BFS agarrando la mejor solución que hay por nivel
+    public int tMinimax(){
+        return 0;
     }
 }

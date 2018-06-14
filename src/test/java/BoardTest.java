@@ -100,7 +100,7 @@ public class BoardTest {
                     try {
                         b.addEdge(i, j, dir);
                     }catch(RuntimeException e){
-                        continue;
+                        e = null; //descartar exception
                     }
                 }
             }

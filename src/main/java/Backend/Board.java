@@ -82,6 +82,16 @@ public class Board {
         matrix[x][y].nOfEdges++;
     }
 
+    public boolean makeMove(int x, int y, DIRECTIONS dir, int color){
+        if(!hasRemainingPlays()) throw new RuntimeException("No more plays");
+        addEdge(x,y, dir);
+        if(isSquareFilled(x,y)){
+            colorBox(x,y, color);
+            return true;
+        }
+        return false;
+    }
+
     //Metodo para saber si todavía hay jugadas por hacer.
     public boolean hasRemainingPlays(){
         return currPlay < maxPlays;
@@ -119,6 +129,7 @@ public class Board {
         }
         return false;
     }
+
 
     public int numberOfCapturableBoxes(){
         int ret = 0;
@@ -171,15 +182,15 @@ public class Board {
     }
 
     //Devuelve un conjunto con todas las posibles jugadas
-    public Set<Board> getPossibleMoves(){
+    public Set<Board> getPossibleMoves(int color){
         Set<Board> ret = new TreeSet<>();
-        Board aux = null;
+        Board aux;
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 for(DIRECTIONS dir: DIRECTIONS.values()){ //se puede optimizar acá
                     if(!hasEdge(i,j,dir)){
                         aux = this.cloneBoard();
-                        aux.addEdge(i,j,dir);
+                        aux.makeMove(i,j,dir, color);
                         ret.add(aux);
                     }
                 }
@@ -238,5 +249,5 @@ public class Board {
     }
 
     //Métodos que faltan de juego: saveBoard, loadBoard, hashCode
-    //Métodos que faltan de IA: existChain, createChain, Heuristic
+    //Métodos que faltan de IA: existChain, createChain
 }
