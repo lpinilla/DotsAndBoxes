@@ -1,7 +1,7 @@
 package Backend;
 
+import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 public class Board {
 
@@ -182,14 +182,18 @@ public class Board {
     }
 
     //Devuelve un conjunto con todas las posibles jugadas
-    public Set<Board> getPossibleMoves(int color){
-        Set<Board> ret = new TreeSet<>();
+    public Set<Board> getPossibleMoves(Board b, int color){
+        Set<Board> ret = new HashSet<>();
         Board aux;
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                for(DIRECTIONS dir: DIRECTIONS.values()){ //se puede optimizar acá
+                for(DIRECTIONS dir: DIRECTIONS.values()){
                     if(!hasEdge(i,j,dir)){
-                        aux = this.cloneBoard();
+                        aux = this.cloneBoard(); //se puede optimizar acá
+                        /*if(aux.makeMove(i,j,dir, color)){
+                            System.out.println("hey");
+                            return getPossibleMoves(aux, color);
+                        }*/
                         aux.makeMove(i,j,dir, color);
                         ret.add(aux);
                     }
@@ -248,6 +252,33 @@ public class Board {
         System.out.println("-------------------------");
     }
 
-    //Métodos que faltan de juego: saveBoard, loadBoard, hashCode
+    //TODO:MEJORAR
+    /*Por ahora solo hago lo necesario para que funcione con los tests
+    **que quiero pero después habría que hacer una buena función.
+    * Ideas: calcular el número de aristas por fila y elevar ese número a un primo.
+    *           +es fácil de chequear
+    *           -hay que encontrar una vez los primos y después elevar los numeros
+             Convertir la cantidad de aristas en un string
+                +fácil de hacer
+                -más costoso para chequear
+     */
+    public int hashCode(){
+        int[] base = new int[size];
+        int sum;
+        for (int i = 0; i < size; i++) {
+            sum = 0;
+            for (int j = 0; j < size; j++) {
+                sum += matrix[i][j].nOfEdges;
+            }
+            base[i]=sum;
+        }
+        sum = 0;
+        if(size == 2){
+            return (int) Math.pow(base[0], 2) * (int) Math.pow(base[1], 3);
+        }
+        return (int) Math.pow(base[0], 2) * (int) Math.pow(base[1], 3) * (int) Math.pow(base[2], 5);
+    }
+
+    //Métodos que faltan de juego: saveBoard, loadBoard
     //Métodos que faltan de IA: existChain, createChain
 }

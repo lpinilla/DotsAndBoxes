@@ -5,11 +5,12 @@ public class IA {
     public enum Mode { DEPTH, TIME}
     private Board b;
     private Mode activeMode;
-    private int maxDepth;
+    private int maxDepth, color;
 
-    public IA(Board b, Mode m, int maxDepth){
+    public IA(Board b, Mode m, int maxDepth, int color){
         this.b = b;
         this.activeMode = m;
+        this.color = color;
         if(m == Mode.DEPTH){
             this.maxDepth = maxDepth;
         }
@@ -33,7 +34,7 @@ public class IA {
     public Board depthMinimax() {
         Board bestMove = null;
         int bestVal = Integer.MIN_VALUE, aux;
-        for (Board move : b.getPossibleMoves(2)) { //TODO:muy hardcodeado
+        for (Board move : b.getPossibleMoves(b, this.color)) {
             aux = dMinimax(move, 0, maxDepth, true);
             if (aux > bestVal) {
                 bestVal = aux;
@@ -50,7 +51,7 @@ public class IA {
         int bestVal, aux;
         if(isMax) {
             bestVal = Integer.MIN_VALUE;
-            for (Board nBoard : b.getPossibleMoves(2)) {
+            for (Board nBoard : b.getPossibleMoves(b, this.color)) {
                 aux = dMinimax(nBoard, currDepth + 1, maxDepth, false);
                 if(bestVal < aux){
                     bestVal = aux;
@@ -59,7 +60,7 @@ public class IA {
             return bestVal;
         }
         bestVal = Integer.MAX_VALUE;
-        for(Board nBoard : b.getPossibleMoves()) {
+        for(Board nBoard : b.getPossibleMoves(b, this.color)) {
             aux = dMinimax(nBoard, currDepth + 1, maxDepth, true);
             if(bestVal > aux){
                 bestVal = aux;

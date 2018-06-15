@@ -136,28 +136,36 @@ public class BoardTest {
         b2.addEdge(0,1, Board.DIRECTIONS.BOTTOM);
         b2.addEdge(1,1, Board.DIRECTIONS.BOTTOM);
         b2.addEdge(1,1, Board.DIRECTIONS.RIGHT);
-        b2.asciiPrintBoard();
         assertEquals(3, b2.numberOfCapturableBoxes());
     }
 
-
-
-
-    //Chain stuff
-
-
-    /*@Test
-    public void chainVerificationOnEmptyMap(){
-        Board b = new Board(3);
-        assertFalse(b.existsChain());
+    @Test
+    public void evaluateTest3(){
+        b.addEdge(0,0, Board.DIRECTIONS.TOP);
+        b.addEdge(0,0, Board.DIRECTIONS.RIGHT);
+        b.addEdge(0,0, Board.DIRECTIONS.LEFT);
+        b.addEdge(0,0, Board.DIRECTIONS.BOTTOM);
+        assertEquals(0, b.numberOfCapturableBoxes());
     }
 
+    //Possible moves tests
+
     @Test
-    public void chainVerificationwithEdgesNoChains(){
-        Board b = new Board(3);
-        b.addEdge( 1, 2, 2);
-        b.addEdge( 3, 4, 1);
-        assertFalse(b.existsChain());
-    }*/
+    public void getNeighborTest1(){
+        Board b2 = new Board(2);
+        b2.addEdge(0,0, Board.DIRECTIONS.TOP);
+        b2.addEdge(0,0, Board.DIRECTIONS.LEFT);
+        b2.addEdge(0,0, Board.DIRECTIONS.RIGHT);
+        b2.addEdge(0,0, Board.DIRECTIONS.BOTTOM);
+        b2.addEdge(0,1, Board.DIRECTIONS.TOP);
+        b2.addEdge(0,1, Board.DIRECTIONS.BOTTOM);
+        b2.addEdge(0,1, Board.DIRECTIONS.RIGHT);
+        b2.addEdge(1,0, Board.DIRECTIONS.BOTTOM);
+        b2.addEdge(1,0, Board.DIRECTIONS.LEFT);
+        b2.addEdge(1,0,Board.DIRECTIONS.RIGHT);
+        b2.addEdge(1,1,Board.DIRECTIONS.BOTTOM);
+        b2.asciiPrintBoard();
+        assertEquals(1,b2.getPossibleMoves(b2, 3).size());
+    }
 
 }

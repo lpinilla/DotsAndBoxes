@@ -4,6 +4,7 @@ public class GameManager {
 
     private class Player{
         private int color, score;
+
         Player(int color){
             this.color = color;
             this.score = 0;
@@ -15,7 +16,7 @@ public class GameManager {
     private Player activePlayer;
     private Player[] players;
     private Board b;
-    private  GAME_STATUS gameStatus;
+    private GAME_STATUS gameStatus;
 
     public GameManager(){
         int size = 3;
