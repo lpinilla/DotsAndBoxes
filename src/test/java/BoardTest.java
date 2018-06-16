@@ -170,7 +170,7 @@ public class BoardTest {
         b2.makeMove(b2,1,0, Board.DIRECTIONS.LEFT,1);
         b2.makeMove(b2,1,0,Board.DIRECTIONS.RIGHT,1);
         b2.makeMove(b2,1,1,Board.DIRECTIONS.BOTTOM, 1);
-        assertEquals(1,b2.getPossibleMoves2(b2, 3).size());
+        assertEquals(1,b2.getPossibleMoves(b2, 3).size());
     }
 
     @Test

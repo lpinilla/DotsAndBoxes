@@ -314,17 +314,15 @@ public class Board { //recordar: sin color == 0
                     if (!hasEdge(b,i, j, dir)) {
                         aux = b.cloneBoard();
                         if (aux.makeMove(aux, i, j, dir, color)) {
-                            //ret.add(aux);
                             consequentMoves = getPossibleMoves(aux, color);
                             if(consequentMoves != null){
-                                System.out.println(consequentMoves.size());
                                 ret.addAll(consequentMoves);
-                                //return ret;
+                            }else{
+                                ret.add(aux);
                             }
                         } else {
                             ret.add(aux);
                         }
-
                         /*aux.makeMove(i,j,dir, color);
                         ret.add(aux);*/
                     }
