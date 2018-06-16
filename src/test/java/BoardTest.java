@@ -178,7 +178,6 @@ public class BoardTest {
         b.makeMove(b,0,0, Board.DIRECTIONS.TOP,1);
         b.makeMove(b,0,0,Board.DIRECTIONS.LEFT,1);
         b.makeMove(b,0,0,Board.DIRECTIONS.RIGHT,1);
-        Set<Board> moves = b.getPossibleMoves(b, 3);
         assertTrue(b.getPossibleMoves(b, 3).size() != 0); //dio 40, ni idea si esta bien
     }
 
@@ -200,6 +199,18 @@ public class BoardTest {
         b2.makeMove(b2,0,0,Board.DIRECTIONS.RIGHT, 1);
         Set<Board> moves = b2.getPossibleMoves(b2, 3);
         assertEquals(16,b2.getPossibleMoves(b2, 3).size());
+    }
+
+    @Test
+    public void ojalaQueNoExploteTest(){
+        Board b3 = new Board(10);
+        Set<Board> moves = b3.getPossibleMoves(b3, 3);
+    }
+
+    @Test
+    public void ojalaQueNoExploteTest2(){
+        Board b4 = new Board(15);
+        Set<Board> moves = b4.getPossibleMoves(b4, 2);
     }
 
 }

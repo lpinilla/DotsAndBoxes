@@ -9,7 +9,7 @@ public class Board { //recordar: sin color == 0
     //currPlay indica cuantas jugadas se hicieron.
     public int size;
     private int maxPlays, currPlay;
-    private static int primeNumbers[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47};
+    private static int primeNumbers[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59};
 
     public enum DIRECTIONS {TOP, RIGHT, BOTTOM, LEFT}
 
@@ -302,7 +302,7 @@ public class Board { //recordar: sin color == 0
     }
 
     //Devuelve un conjunto con todas las posibles jugadas
-    public Set<Board> getPossibleMoves(Board b, int color) { //faltan ver jugadas consecutivas
+    public Set<Board> getPossibleMoves(Board b, int color) { //FIXME: arreglar el tema de null
         if (!b.hasRemainingPlays(b)) {
             return null;
         }
@@ -385,7 +385,7 @@ public class Board { //recordar: sin color == 0
         int ret = 1, primeIndex = 0;
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                ret ^= (int) Math.pow(primeNumbers[primeIndex++],
+                ret ^= (int) Math.pow(primeNumbers[primeIndex++ % primeNumbers.length ],
                         boxConfiguration(matrix[i][j]));
             }
         }
@@ -423,6 +423,20 @@ public class Board { //recordar: sin color == 0
         if (this.getClass() != b.getClass()) return false;
         Board other = (Board) b;
         return hashCode() == other.hashCode();
+    }
+
+    public int differenceInBoxesOfColor(int n, int n2){
+        int nsum = 0, n2sum =0;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if(matrix[i][j].color == n){
+                    nsum++;
+                }else if(matrix[i][j].color == n2){
+                    n2sum++;
+                }
+            }
+        }
+        return nsum - n2sum;
     }
 
         //Métodos que faltan de juego: saveBoard, loadBoard
