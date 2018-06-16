@@ -164,8 +164,15 @@ public class BoardTest {
         b2.addEdge(1,0, Board.DIRECTIONS.LEFT);
         b2.addEdge(1,0,Board.DIRECTIONS.RIGHT);
         b2.addEdge(1,1,Board.DIRECTIONS.BOTTOM);
-        b2.asciiPrintBoard();
         assertEquals(1,b2.getPossibleMoves(b2, 3).size());
+    }
+
+    @Test
+    public void getNeighborTest2(){
+        b.addEdge(0,0, Board.DIRECTIONS.TOP);
+        b.addEdge(0,0,Board.DIRECTIONS.LEFT);
+        b.addEdge(0,0,Board.DIRECTIONS.RIGHT);
+        assertTrue(b.getPossibleMoves(b, 3).size() != 0);
     }
 
 }

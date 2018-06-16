@@ -24,6 +24,16 @@ public class Board {
             this.top = top;
             this.bottom = bottom;
         }
+
+        Box(boolean left, boolean right, boolean top,
+            boolean bottom, int color, int nOfEdges){
+            this.left = left;
+            this.right = right;
+            this.top = top;
+            this.bottom = bottom;
+            this.color = color;
+            this.nOfEdges = nOfEdges;
+        }
     }
 
     private Box[][] matrix;
@@ -38,48 +48,56 @@ public class Board {
         createMatrix(matrix, n);
     }
 
+    public Board(int n, int currPlay){
+        if(n <= 0) throw new IllegalArgumentException("Zero or negative values not allowed");
+        this.size = n;
+        this.currPlay = currPlay;
+        this.maxPlays = 2 * ( n * n + n);
+        matrix = new Box[n][n];
+    }
+
     //Agregar una arista dada la posición de la caja y la dirección
     //TODO: cambiar el nombre de las exceptions
     public void addEdge(int x, int y, DIRECTIONS dir){
-        if(x < 0 || x > matrix.length || y < 0 || y > matrix.length){
+        if(x < 0 || x > this.matrix.length || y < 0 || y > this.matrix.length){
             throw new IllegalArgumentException();
         }
         switch(dir){
             case TOP:
-                if(matrix[x][y].top) throw new RuntimeException("already an edge");
-                matrix[x][y].top = true;
+                if(this.matrix[x][y].top) throw new RuntimeException("already an edge");
+                this.matrix[x][y].top = true;
                 if( (x-1) >= 0){
-                    matrix[x-1][y].bottom = true;
-                    matrix[x-1][y].nOfEdges++;
+                    this.matrix[x-1][y].bottom = true;
+                    this.matrix[x-1][y].nOfEdges++;
                 }
                 break;
             case RIGHT:
-                if(matrix[x][y].right) throw new RuntimeException("already an edge");
-                matrix[x][y].right = true;
+                if(this.matrix[x][y].right) throw new RuntimeException("already an edge");
+                this.matrix[x][y].right = true;
                 if( (y+1) < size){
-                    matrix[x][y+1].left = true;
-                    matrix[x][y+1].nOfEdges++;
+                    this.matrix[x][y+1].left = true;
+                    this.matrix[x][y+1].nOfEdges++;
                 }
                 break;
             case BOTTOM:
-                if(matrix[x][y].bottom) throw new RuntimeException("already an edge");
-                matrix[x][y].bottom = true;
+                if(this.matrix[x][y].bottom) throw new RuntimeException("already an edge");
+                this.matrix[x][y].bottom = true;
                 if( (x+1) < size){
-                    matrix[x+1][y].top = true;
-                    matrix[x+1][y].nOfEdges++;
+                    this.matrix[x+1][y].top = true;
+                    this.matrix[x+1][y].nOfEdges++;
                 }
                 break;
             case LEFT:
-                if(matrix[x][y].left) throw new RuntimeException("already an edge");
-                matrix[x][y].left = true;
+                if(this.matrix[x][y].left) throw new RuntimeException("already an edge");
+                this.matrix[x][y].left = true;
                 if( (y-1) >= 0){
-                    matrix[x][y-1].right = true;
-                    matrix[x][y-1].nOfEdges++;
+                    this.matrix[x][y-1].right = true;
+                    this.matrix[x][y-1].nOfEdges++;
                 }
                 break;
         }
         currPlay++;
-        matrix[x][y].nOfEdges++;
+        this.matrix[x][y].nOfEdges++;
     }
 
     public boolean makeMove(int x, int y, DIRECTIONS dir, int color){
@@ -176,8 +194,16 @@ public class Board {
     }
 
     private Board cloneBoard(){
-        Board aux = new Board(this.size);
-        aux.setMatrix(this.getMatrix().clone());
+        Board aux = new Board(this.size, currPlay);
+        Box box = null;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                box = this.matrix[i][j];
+                aux.matrix[i][j] = new Box(box.left, box.right,
+                        box.top, box.bottom, box.color, box.nOfEdges);
+                ;
+            }
+        }
         return aux;
     }
 
@@ -191,7 +217,6 @@ public class Board {
                     if(!hasEdge(i,j,dir)){
                         aux = this.cloneBoard(); //se puede optimizar acá
                         /*if(aux.makeMove(i,j,dir, color)){
-                            System.out.println("hey");
                             return getPossibleMoves(aux, color);
                         }*/
                         aux.makeMove(i,j,dir, color);
@@ -261,22 +286,23 @@ public class Board {
              Convertir la cantidad de aristas en un string
                 +fácil de hacer
                 -más costoso para chequear
+
+       Ver Zoobrist Hashing
      */
     public int hashCode(){
-        int[] base = new int[size];
+        int[] exponents = new int[size];
         int sum;
         for (int i = 0; i < size; i++) {
             sum = 0;
             for (int j = 0; j < size; j++) {
                 sum += matrix[i][j].nOfEdges;
             }
-            base[i]=sum;
+            exponents[i]=sum;
         }
-        sum = 0;
         if(size == 2){
-            return (int) Math.pow(base[0], 2) * (int) Math.pow(base[1], 3);
+            return (int) Math.pow(2, exponents[0]) * (int) Math.pow(3, exponents[1]);
         }
-        return (int) Math.pow(base[0], 2) * (int) Math.pow(base[1], 3) * (int) Math.pow(base[2], 5);
+        return (int) Math.pow(2, exponents[0]) * (int) Math.pow(3, exponents[1]) * (int) Math.pow(5, exponents[2]);
     }
 
     //Métodos que faltan de juego: saveBoard, loadBoard
