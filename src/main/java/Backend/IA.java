@@ -3,22 +3,26 @@ package Backend;
 public class IA {
 
     public enum Mode { DEPTH, TIME}
+
     private Board b;
     private Mode activeMode;
     private int maxDepth, color;
 
-    public IA(Board b, Mode m, int maxDepth, int color){
+    private final float TOTALTIME;
+
+    public IA(Board b, Mode m, int maxDepth, float totalTime, int color){
         this.b = b;
         this.activeMode = m;
         this.color = color;
-        if(m == Mode.DEPTH){
-            this.maxDepth = maxDepth;
-        }
+        this.maxDepth = maxDepth;
+        this.TOTALTIME = totalTime;
     }
 
     public void miniMax(){
+        Board sol;
         if(activeMode == Mode.DEPTH){
-            b = depthMinimax(); //no creo que funcione así tan directo
+            sol = depthMinimax();
+            b = new Board(b.size, sol.getCurrPlay());
         }else{
             tMinimax();
         }
@@ -69,7 +73,7 @@ public class IA {
         return bestVal;
     }
 
-    //Tiene que hacer BFS agarrando la mejor solución que hay por nivel
+    //Tiene que hacer BFS agarrando la mejor solución que hay por nivel mientras haya tiempo
     public int tMinimax(){
         return 0;
     }

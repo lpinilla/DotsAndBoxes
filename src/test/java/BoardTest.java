@@ -8,6 +8,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.rules.ExpectedException;
 
+import java.util.Set;
+
 public class BoardTest {
 
     private Board b;
@@ -29,52 +31,54 @@ public class BoardTest {
     }
 
     @Test
-    public void addEdgeToExistingEdgeTest(){
+    public void makeMoveToExistingEdgeTest(){
         excep.expect(RuntimeException.class);
         excep.expectMessage("already an edge");
-        b.addEdge(0,0, Board.DIRECTIONS.TOP);
-        b.addEdge(0,0, Board.DIRECTIONS.TOP);
+        b.makeMove(b,0,0, Board.DIRECTIONS.TOP,1);
+        b.makeMove(b,0,0, Board.DIRECTIONS.TOP,1);
     }
 
     @Test
     public void squareSharedBooleanEdgeCorrectness(){
         excep.expect(RuntimeException.class);
         excep.expectMessage("already an edge");
-        b.addEdge(0,0, Board.DIRECTIONS.RIGHT);
-        b.addEdge(0, 1, Board.DIRECTIONS.LEFT);
+        b.makeMove(b,0,0, Board.DIRECTIONS.RIGHT,1);
+        b.makeMove(b,0, 1, Board.DIRECTIONS.LEFT,1);
     }
 
     @Test
     public void squareSharedBooleanEdgeCorrectness2(){
         excep.expect(RuntimeException.class);
         excep.expectMessage("already an edge");
-        b.addEdge(0,1, Board.DIRECTIONS.BOTTOM);
-        b.addEdge(1, 1, Board.DIRECTIONS.TOP);
+        b.makeMove(b,0,1, Board.DIRECTIONS.BOTTOM,1);
+        b.makeMove(b,1, 1, Board.DIRECTIONS.TOP,1);
     }
 
     @Test
     public void squareSharedBooleanEdgeCorrectness3(){
         excep.expect(RuntimeException.class);
         excep.expectMessage("already an edge");
-        b.addEdge(1,1, Board.DIRECTIONS.TOP);
-        b.addEdge(0, 1, Board.DIRECTIONS.BOTTOM);
+        b.makeMove(b,1,1, Board.DIRECTIONS.TOP,1);
+        b.makeMove(b,0, 1, Board.DIRECTIONS.BOTTOM,1);
     }
 
     @Test
     public void squareSharedBooleanEdgeCorrectness4(){
         excep.expect(RuntimeException.class);
         excep.expectMessage("already an edge");
-        b.addEdge(1, 1, Board.DIRECTIONS.LEFT);
-        b.addEdge(1,0, Board.DIRECTIONS.RIGHT);
+        b.makeMove(b,1, 1, Board.DIRECTIONS.LEFT,1);
+        b.makeMove(b,1,0, Board.DIRECTIONS.RIGHT,1);
     }
 
     @Test
     public void fillBoxTest(){
-        b.addEdge(0,0, Board.DIRECTIONS.TOP);
-        b.addEdge(0,0, Board.DIRECTIONS.BOTTOM);
-        b.addEdge(0,0, Board.DIRECTIONS.LEFT);
-        b.addEdge(0,0, Board.DIRECTIONS.RIGHT);
-        assertTrue(b.isSquareFilled(0,0));
+        excep.expect(IllegalArgumentException.class);
+        excep.expectMessage("Already painted!");
+        b.makeMove(b,0,0, Board.DIRECTIONS.TOP,1);
+        b.makeMove(b,0,0, Board.DIRECTIONS.BOTTOM,1);
+        b.makeMove(b,0,0, Board.DIRECTIONS.LEFT,1);
+        b.makeMove(b,0,0, Board.DIRECTIONS.RIGHT,1);
+        b.colorBox(0,0,1);
     }
 
 
@@ -83,11 +87,13 @@ public class BoardTest {
      en el mismo directamente.*/
     @Test
     public void fillBoxByConsequence(){
-        b.addEdge(1,2, Board.DIRECTIONS.LEFT);
-        b.addEdge(1,0, Board.DIRECTIONS.RIGHT);
-        b.addEdge(2,1, Board.DIRECTIONS.TOP);
-        b.addEdge(0,1, Board.DIRECTIONS.BOTTOM);
-        assertTrue(b.isSquareFilled(1,1));
+        excep.expect(IllegalArgumentException.class);
+        excep.expectMessage("Already painted!");
+        b.makeMove(b,1,2, Board.DIRECTIONS.LEFT,1);
+        b.makeMove(b,1,0, Board.DIRECTIONS.RIGHT,1);
+        b.makeMove(b,2,1, Board.DIRECTIONS.TOP,1);
+        b.makeMove(b,0,1, Board.DIRECTIONS.BOTTOM,1);
+        b.colorBox(1,1,1);
     }
 
     /*Test para saber si funciona bien el manejo de turnos.
@@ -98,14 +104,14 @@ public class BoardTest {
             for (int j = 0; j < size; j++) {
                 for(Board.DIRECTIONS dir : Board.DIRECTIONS.values()){
                     try {
-                        b.addEdge(i, j, dir);
+                        b.makeMove(b,i, j, dir,1);
                     }catch(RuntimeException e){
                         e = null; //descartar exception
                     }
                 }
             }
         }
-        assertFalse(b.hasRemainingPlays());
+        assertFalse(b.hasRemainingPlays(b));
     }
 
     //Heuristic Tests
@@ -117,62 +123,83 @@ public class BoardTest {
 
     @Test
     public void evaluateTest1(){
-        b.addEdge(0,0, Board.DIRECTIONS.TOP);
-        b.addEdge(0,0, Board.DIRECTIONS.LEFT);
-        b.addEdge(0,0, Board.DIRECTIONS.RIGHT);
-        b.addEdge(1,0, Board.DIRECTIONS.LEFT);
-        b.addEdge(1,1, Board.DIRECTIONS.BOTTOM);
-        b.addEdge(0,1, Board.DIRECTIONS.BOTTOM);
+        b.makeMove(b,0,0, Board.DIRECTIONS.TOP, 1);
+        b.makeMove(b,0,0, Board.DIRECTIONS.LEFT, 1);
+        b.makeMove(b,0,0, Board.DIRECTIONS.RIGHT, 1);
+        b.makeMove(b,1,0, Board.DIRECTIONS.LEFT, 1);
+        b.makeMove(b,1,1, Board.DIRECTIONS.BOTTOM, 1);
+        b.makeMove(b,0,1, Board.DIRECTIONS.BOTTOM, 1);
         assertEquals(1, b.numberOfCapturableBoxes());
     }
 
     @Test
     public void evaluateTest2(){
         Board b2 = new Board(2);
-        b2.addEdge(0,0, Board.DIRECTIONS.TOP);
-        b2.addEdge(0,0, Board.DIRECTIONS.LEFT);
-        b2.addEdge(0,0, Board.DIRECTIONS.RIGHT);
-        b2.addEdge(1,0, Board.DIRECTIONS.LEFT);
-        b2.addEdge(0,1, Board.DIRECTIONS.BOTTOM);
-        b2.addEdge(1,1, Board.DIRECTIONS.BOTTOM);
-        b2.addEdge(1,1, Board.DIRECTIONS.RIGHT);
+        b2.makeMove(b2,0,0, Board.DIRECTIONS.TOP, 1);
+        b2.makeMove(b2,0,0, Board.DIRECTIONS.LEFT, 1);
+        b2.makeMove(b2,0,0, Board.DIRECTIONS.RIGHT, 1);
+        b2.makeMove(b2,1,0, Board.DIRECTIONS.LEFT, 1);
+        b2.makeMove(b2,0,1, Board.DIRECTIONS.BOTTOM, 1);
+        b2.makeMove(b2,1,1, Board.DIRECTIONS.BOTTOM, 1);
+        b2.makeMove(b2,1,1, Board.DIRECTIONS.RIGHT, 1);
         assertEquals(3, b2.numberOfCapturableBoxes());
     }
 
     @Test
     public void evaluateTest3(){
-        b.addEdge(0,0, Board.DIRECTIONS.TOP);
-        b.addEdge(0,0, Board.DIRECTIONS.RIGHT);
-        b.addEdge(0,0, Board.DIRECTIONS.LEFT);
-        b.addEdge(0,0, Board.DIRECTIONS.BOTTOM);
+        b.makeMove(b,0,0, Board.DIRECTIONS.TOP, 1);
+        b.makeMove(b,0,0, Board.DIRECTIONS.RIGHT, 1);
+        b.makeMove(b,0,0, Board.DIRECTIONS.LEFT, 1);
+        b.makeMove(b,0,0, Board.DIRECTIONS.BOTTOM, 1);
         assertEquals(0, b.numberOfCapturableBoxes());
     }
 
     //Possible moves tests
 
     @Test
-    public void getNeighborTest1(){
+    public void getNeighborTest1(){ //tal vez no ande con n == 3
         Board b2 = new Board(2);
-        b2.addEdge(0,0, Board.DIRECTIONS.TOP);
-        b2.addEdge(0,0, Board.DIRECTIONS.LEFT);
-        b2.addEdge(0,0, Board.DIRECTIONS.RIGHT);
-        b2.addEdge(0,0, Board.DIRECTIONS.BOTTOM);
-        b2.addEdge(0,1, Board.DIRECTIONS.TOP);
-        b2.addEdge(0,1, Board.DIRECTIONS.BOTTOM);
-        b2.addEdge(0,1, Board.DIRECTIONS.RIGHT);
-        b2.addEdge(1,0, Board.DIRECTIONS.BOTTOM);
-        b2.addEdge(1,0, Board.DIRECTIONS.LEFT);
-        b2.addEdge(1,0,Board.DIRECTIONS.RIGHT);
-        b2.addEdge(1,1,Board.DIRECTIONS.BOTTOM);
-        assertEquals(1,b2.getPossibleMoves(b2, 3).size());
+        b2.makeMove(b2,0,0, Board.DIRECTIONS.TOP,1);
+        b2.makeMove(b2,0,0, Board.DIRECTIONS.LEFT,1);
+        b2.makeMove(b2,0,0, Board.DIRECTIONS.RIGHT,1);
+        b2.makeMove(b2,0,0, Board.DIRECTIONS.BOTTOM,1);
+        b2.makeMove(b2,0,1, Board.DIRECTIONS.TOP,1);
+        b2.makeMove(b2,0,1, Board.DIRECTIONS.BOTTOM,1);
+        b2.makeMove(b2,0,1, Board.DIRECTIONS.RIGHT,1);
+        b2.makeMove(b2,1,0, Board.DIRECTIONS.BOTTOM,1);
+        b2.makeMove(b2,1,0, Board.DIRECTIONS.LEFT,1);
+        b2.makeMove(b2,1,0,Board.DIRECTIONS.RIGHT,1);
+        b2.makeMove(b2,1,1,Board.DIRECTIONS.BOTTOM, 1);
+        assertEquals(1,b2.getPossibleMoves2(b2, 3).size());
     }
 
     @Test
     public void getNeighborTest2(){
-        b.addEdge(0,0, Board.DIRECTIONS.TOP);
-        b.addEdge(0,0,Board.DIRECTIONS.LEFT);
-        b.addEdge(0,0,Board.DIRECTIONS.RIGHT);
-        assertTrue(b.getPossibleMoves(b, 3).size() != 0);
+        b.makeMove(b,0,0, Board.DIRECTIONS.TOP,1);
+        b.makeMove(b,0,0,Board.DIRECTIONS.LEFT,1);
+        b.makeMove(b,0,0,Board.DIRECTIONS.RIGHT,1);
+        Set<Board> moves = b.getPossibleMoves(b, 3);
+        assertTrue(b.getPossibleMoves(b, 3).size() != 0); //dio 40, ni idea si esta bien
+    }
+
+    @Test
+    public void getNeighborTest3(){
+        Board b2 = new Board(2);
+        b2.makeMove(b2,0,0, Board.DIRECTIONS.TOP, 1);
+        b2.makeMove(b2,0,0,Board.DIRECTIONS.LEFT, 1);
+        b2.makeMove(b2,0,0,Board.DIRECTIONS.RIGHT, 1);
+        b2.makeMove(b2,0,0,Board.DIRECTIONS.BOTTOM, 1);
+        assertEquals(8,b2.getPossibleMoves(b2, 3).size());
+    }
+
+    @Test
+    public void getNeighborTest4(){
+        Board b2 = new Board(2);
+        b2.makeMove(b2,0,0, Board.DIRECTIONS.TOP, 1);
+        b2.makeMove(b2,0,0,Board.DIRECTIONS.LEFT, 1);
+        b2.makeMove(b2,0,0,Board.DIRECTIONS.RIGHT, 1);
+        Set<Board> moves = b2.getPossibleMoves(b2, 3);
+        assertEquals(16,b2.getPossibleMoves(b2, 3).size());
     }
 
 }

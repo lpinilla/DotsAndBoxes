@@ -30,7 +30,7 @@ public class GameManager {
 
     //TODO:change name of exception
     public void move(int x, int y, Board.DIRECTIONS dir){
-        if(b.makeMove(x,y, dir, activePlayer.color)){
+        if(b.makeMove(b, x,y, dir, activePlayer.color)){
             activePlayer.score++;
         }
         changeTurn();
@@ -39,7 +39,7 @@ public class GameManager {
     }
 
     private void checkIfIsGameOver(){
-        if(!b.hasRemainingPlays()){
+        if(!b.hasRemainingPlays(b)){
             gameStatus = GAME_STATUS.OVER;
             gameOver();
         }
