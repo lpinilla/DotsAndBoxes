@@ -28,14 +28,23 @@ public class GameManager {
         gameStatus = GAME_STATUS.PLAYING;
     }
 
-    //TODO:change name of exception
+    public void play(){ //tal vez convenga boolean
+        while(b.hasRemainingPlays(b)){
+            //read input
+            //move(input);
+            //updateBoard();
+        }
+        gameStatus = GAME_STATUS.OVER;
+
+    }
+
     public void move(int x, int y, Board.DIRECTIONS dir){
         if(b.makeMove(b, x,y, dir, activePlayer.color)){
             activePlayer.score++;
         }
         changeTurn();
         b.asciiPrintBoard(); //temporary
-        checkIfIsGameOver();
+        //checkIfIsGameOver();
     }
 
     private void checkIfIsGameOver(){

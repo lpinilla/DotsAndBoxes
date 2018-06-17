@@ -11,7 +11,9 @@ public class Board { //recordar: sin color == 0
     //currPlay indica cuantas jugadas se hicieron.
     public int size;
     private int maxPlays, currPlay;
+
     private static int primeNumbers[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59};
+    private static int maxSize = 15;
 
     public enum DIRECTIONS {TOP, RIGHT, BOTTOM, LEFT}
 
@@ -45,6 +47,7 @@ public class Board { //recordar: sin color == 0
     //constructor para tablero vacío, n indica la cantidad de cuadrados
     public Board(int n) {
         if (n <= 0) throw new IllegalArgumentException("Zero or negative values not allowed");
+        if (n > maxSize) throw new IllegalArgumentException("N must be less than 15");
         this.size = n;
         this.currPlay = 0;
         this.maxPlays = 2 * ((n * n) + n);
@@ -54,6 +57,7 @@ public class Board { //recordar: sin color == 0
 
     public Board(int n, int currPlay) {
         if (n <= 0) throw new IllegalArgumentException("Zero or negative values not allowed");
+        if (n > maxSize) throw new IllegalArgumentException("N must be less than 15");
         this.size = n;
         this.currPlay = currPlay;
         this.maxPlays = 2 * ((n * n) + n);
@@ -238,7 +242,7 @@ public class Board { //recordar: sin color == 0
         return false;
     }
 
-
+    //métodos de la vieja heurística
     public int numberOfCapturableBoxes() {
         int ret = 0;
         for (int i = 0; i < size; i++) {
@@ -276,11 +280,6 @@ public class Board { //recordar: sin color == 0
 
     private Box[][] getMatrix() {
         return this.matrix;
-    }
-
-    //tal vez pueda usar esto para loadGame
-    private void setMatrix(Box[][] m) {
-        this.matrix = m;
     }
 
     public int getCurrPlay() {
@@ -438,7 +437,7 @@ public class Board { //recordar: sin color == 0
 
     public void saveGame(String fileName){
         try {
-            PrintWriter writer = new PrintWriter("src/test/java/" +fileName + ".txt", "UTF-8");
+            PrintWriter writer = new PrintWriter("src/main/java/SavedGames/" + fileName + ".txt", "UTF-8");
             writer.println(size);
             writer.println(currPlay);
             StringBuffer fila;

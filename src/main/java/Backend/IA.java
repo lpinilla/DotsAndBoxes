@@ -1,5 +1,10 @@
 package Backend;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
+
 public class IA {
 
     public enum Mode { DEPTH, TIME}
@@ -68,19 +73,29 @@ public class IA {
     }*/
 
     public Board depthMinimax(){
-        return  dMinimax(b, 0, maxDepth, true, Integer.MIN_VALUE, Integer.MAX_VALUE).move;
+        return  dMinimax(b, 0, maxDepth, true, Integer.MIN_VALUE,
+                Integer.MAX_VALUE, new HashMap<Board, Integer>()).move;
     }
 
-    private Solution dMinimax(Board b, int currDepth, int maxDepth, boolean isMax, int alpha, int beta){
+    //ver si hay que modificarlo para que sirva también para timeMinimax
+    private Solution dMinimax(Board b, int currDepth, int maxDepth, boolean isMax,
+                              int alpha, int beta, Map<Board,Integer> map){
         if(currDepth == maxDepth){
-            return new Solution(b, evaluate2(b));
+            int score = evaluate2(b);
+            map.put(b, score);
+            return new Solution(b, score);
         }
         int bestVal;
         Solution bestSol = null, aux;
         if(isMax) {
             bestVal = Integer.MIN_VALUE;
-            for (Board nBoard : b.getPossibleMoves(b, this.color)) { //ver como manejar si no hay más lugar
-                aux = dMinimax(nBoard, currDepth + 1, maxDepth, false, alpha, beta);
+            for (Board nBoard : b.getPossibleMoves(b, this.color)) {
+                if(!map.containsKey(nBoard)) {
+                    aux = dMinimax(nBoard, currDepth + 1, maxDepth, false, alpha, beta, map);
+                    map.put(nBoard, aux.score);
+                }else{
+                    aux = new Solution(nBoard, map.get(nBoard));
+                }
                 if(aux != null &&  (bestSol == null || bestVal < aux.score)){
                     bestVal = aux.score;
                     bestSol = aux;
@@ -96,8 +111,13 @@ public class IA {
             bestSol = null;
             aux = null;
             for (Board nBoard : b.getPossibleMoves(b, otherPlayerColor)) {
-                aux = dMinimax(nBoard, currDepth + 1, maxDepth, true, alpha, beta);
-                if (bestSol == null || (aux != null && bestVal > aux.score)) {
+                if(!map.containsKey(nBoard)) {
+                    aux = dMinimax(nBoard, currDepth + 1, maxDepth, true, alpha, beta, map);
+                    map.put(nBoard, aux.score);
+                }else{
+                    aux = new Solution(nBoard, map.get(nBoard));
+                }
+                if (aux != null && (bestSol == null || bestVal > aux.score)) {
                     bestVal = aux.score;
                     bestSol = aux;
                 }
@@ -116,10 +136,11 @@ public class IA {
         Solution bestSol = null, aux = null;
         final long maxTime = System.currentTimeMillis() + TOTALTIME;
         long currtime = System.currentTimeMillis();
+        Map<Board, Integer> map = new HashMap<>();
         do{
             for(int depth = 0; hasTime(maxTime) && depth < MAXDEPTH; depth++){
                 if(hasTime(maxTime)) {
-                    aux = dMinimax(b, 0, depth, true, Integer.MIN_VALUE, Integer.MAX_VALUE);
+                    aux = dMinimax(b, 0, depth, true, Integer.MIN_VALUE, Integer.MAX_VALUE, map);
                 }
                 if(bestSol == null || (aux != null && aux.score > bestSol.score)){
                     bestSol = aux;
@@ -134,7 +155,48 @@ public class IA {
     }
 
     private boolean hasTime(long maxTime){
-        long time = System.currentTimeMillis();
         return System.currentTimeMillis() <= maxTime;
+    }
+
+
+    /*
+    public void saveGame(String fileName){
+        try {
+            PrintWriter writer = new PrintWriter("src/test/java/" +fileName + ".txt", "UTF-8");
+            writer.println(size);
+            writer.println(currPlay);
+            StringBuffer fila;
+            for (int i = 0; i < size; i++) {
+                fila = new StringBuffer();
+                for (int j = 0; j < size; j++) {
+                    fila.append(boxConfiguration(matrix[i][j]));
+                    fila.append("-");
+                    fila.append(matrix[i][j].color);
+                    fila.append(" ");
+                }
+                writer.println(fila);
+            }
+            writer.close();
+        }catch (IOException e){
+            e.getMessage(); //hacer algo con la exception. (mostrarla en pantalla)?
+        }
+    }*/
+
+    public void saveDOTFile(){
+        try{
+            PrintWriter writer = new PrintWriter("src/main/java/SavedGames/TreeSave.dot", "UTF-8");
+            //writer.pritnln a partir de acá
+            /*
+            En cada pasada: Indicar b->nMove
+            nMove [estilos]
+            en selección de best
+            nMove [estilos2]
+            en poda
+            nMode[estilo3]
+             */
+            writer.close();
+        }catch(IOException e){
+            e.getMessage(); //tal vez hacer algo con la exception;
+        }
     }
 }
