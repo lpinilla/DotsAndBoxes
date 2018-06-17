@@ -19,9 +19,9 @@ public class IA {
     private int maxDepth, color, otherPlayerColor;
     private boolean prune;
 
-    private final float TOTALTIME;
+    private final long TOTALTIME;
 
-    public IA(Board b, Mode m, int maxDepth, float totalTime, int color, int otherPlayerColor, boolean prune){
+    public IA(Board b, Mode m, int maxDepth, long totalTime, int color, int otherPlayerColor, boolean prune){
         this.b = b;
         this.activeMode = m;
         this.color = color;
@@ -37,7 +37,7 @@ public class IA {
             sol = depthMinimax();
             b = new Board(b.size, sol.getCurrPlay());
         }else{
-            tMinimax();
+            b = timeMinimax();
         }
         return b;
     }
@@ -49,7 +49,7 @@ public class IA {
         return b.numberOfCapturableBoxes(); //vieja heurística
     }
 
-    private int evaluate2(Board b){ //TODO: hacer private
+    private int evaluate2(Board b){
         return b.differenceInBoxesOfColor(color, otherPlayerColor);
     }
 
@@ -68,18 +68,11 @@ public class IA {
     }*/
 
     public Board depthMinimax(){
-        Solution bestMove = null;
-        Solution aux;
-        aux = dMinimax(b, 0, maxDepth, true, Integer.MIN_VALUE, Integer.MAX_VALUE);
-        if(bestMove == null || bestMove.score < aux.score){
-            bestMove = aux;
-        }
-        return bestMove.move;
+        return  dMinimax(b, 0, maxDepth, true, Integer.MIN_VALUE, Integer.MAX_VALUE).move;
     }
 
     private Solution dMinimax(Board b, int currDepth, int maxDepth, boolean isMax, int alpha, int beta){
         if(currDepth == maxDepth){
-            //return evaluate(b);
             return new Solution(b, evaluate2(b));
         }
         int bestVal;
@@ -88,7 +81,7 @@ public class IA {
             bestVal = Integer.MIN_VALUE;
             for (Board nBoard : b.getPossibleMoves(b, this.color)) { //ver como manejar si no hay más lugar
                 aux = dMinimax(nBoard, currDepth + 1, maxDepth, false, alpha, beta);
-                if(bestSol == null || bestVal < aux.score){
+                if(aux != null &&  (bestSol == null || bestVal < aux.score)){
                     bestVal = aux.score;
                     bestSol = aux;
                 }
@@ -104,7 +97,7 @@ public class IA {
             aux = null;
             for (Board nBoard : b.getPossibleMoves(b, otherPlayerColor)) {
                 aux = dMinimax(nBoard, currDepth + 1, maxDepth, true, alpha, beta);
-                if (bestSol == null || bestVal > aux.score) {
+                if (bestSol == null || (aux != null && bestVal > aux.score)) {
                     bestVal = aux.score;
                     bestSol = aux;
                 }
@@ -117,8 +110,31 @@ public class IA {
         return bestSol;
     }
 
-    //Tiene que hacer BFS agarrando la mejor solución que hay por nivel mientras haya tiempo
-    public int tMinimax(){
-        return 0;
+    //Iterative deepening
+    public Board timeMinimax(){
+        int MAXDEPTH = 2;
+        Solution bestSol = null, aux = null;
+        final long maxTime = System.currentTimeMillis() + TOTALTIME;
+        long currtime = System.currentTimeMillis();
+        do{
+            for(int depth = 0; hasTime(maxTime) && depth < MAXDEPTH; depth++){
+                if(hasTime(maxTime)) {
+                    aux = dMinimax(b, 0, depth, true, Integer.MIN_VALUE, Integer.MAX_VALUE);
+                }
+                if(bestSol == null || (aux != null && aux.score > bestSol.score)){
+                    bestSol = aux;
+                }
+            }
+            MAXDEPTH++;
+        }while(hasTime(maxTime));
+        if(bestSol == null){
+            throw new RuntimeException("Not enough time"); //cambiar después el tipo de exception
+        }
+        return bestSol.move;
+    }
+
+    private boolean hasTime(long maxTime){
+        long time = System.currentTimeMillis();
+        return System.currentTimeMillis() <= maxTime;
     }
 }

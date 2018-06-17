@@ -300,35 +300,33 @@ public class Board { //recordar: sin color == 0
         return aux;
     }
 
-    //Devuelve un conjunto con todas las posibles jugadas
-    public Set<Board> getPossibleMoves(Board b, int color) { //FIXME: arreglar el tema de null
-        if (!b.hasRemainingPlays(b)) {
-            return null;
+    //devuelve el conjunto de todas las posibles jugadas
+    public Set<Board> getPossibleMoves(Board b, int color){
+        Set<Board> ret = new HashSet<>();
+        getPossibleMovesRec(b, ret, color);
+        return ret;
+    }
+
+    private void getPossibleMovesRec(Board b, Set<Board> set, int color){
+        if(!hasRemainingPlays(b)){
+            set.add(b);
+            return;
         }
-        Set<Board> ret = new HashSet<>(), consequentMoves;
         Board aux;
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                for (DIRECTIONS dir : DIRECTIONS.values()) {
-                    if (!hasEdge(b,i, j, dir)) {
+                for(DIRECTIONS dir : DIRECTIONS.values()){
+                    if(!hasEdge(b, i,j,dir)){
                         aux = b.cloneBoard();
-                        if (aux.makeMove(aux, i, j, dir, color)) {
-                            consequentMoves = getPossibleMoves(aux, color);
-                            if(consequentMoves != null){
-                                ret.addAll(consequentMoves);
-                            }else{
-                                ret.add(aux);
-                            }
-                        } else {
-                            ret.add(aux);
+                        if(aux.makeMove(aux, i,j,dir, color)){
+                            getPossibleMovesRec(aux, set, color);
+                        }else{
+                            set.add(aux);
                         }
-                        /*aux.makeMove(i,j,dir, color);
-                        ret.add(aux);*/
                     }
                 }
             }
         }
-        return ret;
     }
 
     public void asciiPrintBoard () { //testing purposes
