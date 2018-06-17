@@ -17,16 +17,18 @@ public class IA {
     private Board b;
     private Mode activeMode;
     private int maxDepth, color, otherPlayerColor;
+    private boolean prune;
 
     private final float TOTALTIME;
 
-    public IA(Board b, Mode m, int maxDepth, float totalTime, int color, int otherPlayerColor){
+    public IA(Board b, Mode m, int maxDepth, float totalTime, int color, int otherPlayerColor, boolean prune){
         this.b = b;
         this.activeMode = m;
         this.color = color;
         this.otherPlayerColor = otherPlayerColor;
         this.maxDepth = maxDepth;
         this.TOTALTIME = totalTime;
+        this.prune = prune;
     }
 
     public Board miniMax(){
@@ -68,14 +70,14 @@ public class IA {
     public Board depthMinimax(){
         Solution bestMove = null;
         Solution aux;
-        aux = dMinimax(b, 0, maxDepth, true);
+        aux = dMinimax(b, 0, maxDepth, true, Integer.MIN_VALUE, Integer.MAX_VALUE);
         if(bestMove == null || bestMove.score < aux.score){
             bestMove = aux;
         }
         return bestMove.move;
     }
 
-    private Solution dMinimax(Board b, int currDepth, int maxDepth, boolean isMax){
+    private Solution dMinimax(Board b, int currDepth, int maxDepth, boolean isMax, int alpha, int beta){
         if(currDepth == maxDepth){
             //return evaluate(b);
             return new Solution(b, evaluate2(b));
@@ -85,10 +87,14 @@ public class IA {
         if(isMax) {
             bestVal = Integer.MIN_VALUE;
             for (Board nBoard : b.getPossibleMoves(b, this.color)) { //ver como manejar si no hay más lugar
-                aux = dMinimax(nBoard, currDepth + 1, maxDepth, false);
+                aux = dMinimax(nBoard, currDepth + 1, maxDepth, false, alpha, beta);
                 if(bestSol == null || bestVal < aux.score){
                     bestVal = aux.score;
                     bestSol = aux;
+                }
+                alpha = Math.max(alpha, bestVal);
+                if(this.prune && beta <= alpha){
+                    break;
                 }
             }
             return bestSol;
@@ -97,10 +103,14 @@ public class IA {
             bestSol = null;
             aux = null;
             for (Board nBoard : b.getPossibleMoves(b, otherPlayerColor)) {
-                aux = dMinimax(nBoard, currDepth + 1, maxDepth, true);
+                aux = dMinimax(nBoard, currDepth + 1, maxDepth, true, alpha, beta);
                 if (bestSol == null || bestVal > aux.score) {
                     bestVal = aux.score;
                     bestSol = aux;
+                }
+                beta = Math.min(beta, bestVal);
+                if(prune && beta <= alpha){
+                    break;
                 }
             }
         }

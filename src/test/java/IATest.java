@@ -9,20 +9,20 @@ import static org.junit.Assert.assertTrue;
 
 public class IATest {
 
-    IA jarvis;
-    GameManager gm;
+    private IA jarvis;
+    private GameManager gm;
 
     @Before
     public void before(){
         gm = new GameManager();
-        jarvis = new IA(gm.getBoard(), IA.Mode.DEPTH, 1, 0, 1,2);
+        jarvis = new IA(gm.getBoard(), IA.Mode.DEPTH, 1, 0, 1,2, false);
     }
 
     //Analizar si dada una caja que es capturable, la agarra
     @Test
     public void bestBoardInLimitedSpace(){
         Board b = new Board(2);
-        jarvis = new IA(b, IA.Mode.DEPTH, 1, 0,1,2);
+        jarvis = new IA(b, IA.Mode.DEPTH, 1, 0,1,2, false);
         b.makeMove(b, 0,0, Board.DIRECTIONS.TOP, 1);
         b.makeMove(b, 0,0, Board.DIRECTIONS.RIGHT, 1);
         b.makeMove(b, 0,0, Board.DIRECTIONS.LEFT, 1);
@@ -39,7 +39,7 @@ public class IATest {
     @Test
     public void completeSquareIA(){
         Board b = new Board(2);
-        jarvis = new IA(b, IA.Mode.DEPTH, 1, 0,1,2);
+        jarvis = new IA(b, IA.Mode.DEPTH, 1, 0,1,2, false);
         b.makeMove(b, 0,0, Board.DIRECTIONS.TOP, 1);
         b.makeMove(b, 0,0, Board.DIRECTIONS.RIGHT, 1);
         b.makeMove(b, 0,0, Board.DIRECTIONS.LEFT, 1);

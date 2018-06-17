@@ -167,10 +167,7 @@ public class Board { //recordar: sin color == 0
             colorBox(x, y, color);
             return true;
         }
-        if(checkConsecutiveSquares(x,y,color)){
-            return true;
-        }
-        return false;
+        return checkConsecutiveSquares(x, y, color);
     }
 
     private boolean checkConsecutiveSquares(int x, int y, int color){
@@ -395,7 +392,6 @@ public class Board { //recordar: sin color == 0
     }
 
     private int boxConfiguration(Box b) {
-
         if (!b.top && !b.right && !b.bottom && !b.left) return 1; //vacía
         if(b.top && b.right && b.bottom && b.left) return 2;
         //aristas solas
@@ -447,14 +443,14 @@ public class Board { //recordar: sin color == 0
             PrintWriter writer = new PrintWriter("src/test/java/" +fileName + ".txt", "UTF-8");
             writer.println(size);
             writer.println(currPlay);
-            String fila;
+            StringBuffer fila;
             for (int i = 0; i < size; i++) {
-                fila = "";
+                fila = new StringBuffer();
                 for (int j = 0; j < size; j++) {
-                    fila += boxConfiguration(matrix[i][j]);
-                    fila += "-";
-                    fila += matrix[i][j].color;
-                    fila += " ";
+                    fila.append(boxConfiguration(matrix[i][j]));
+                    fila.append("-");
+                    fila.append(matrix[i][j].color);
+                    fila.append(" ");
                 }
                 writer.println(fila);
             }
@@ -465,26 +461,31 @@ public class Board { //recordar: sin color == 0
     }
 
     public static Board loadGame(String fileName){
-        File f = null;
+        File f;
         Scanner scanner = null;
+        Board b = null;
         try{
             f = new File(fileName + ".txt");
             scanner = new Scanner(f);
         }catch(Exception e){
             e.getMessage();
         }
-        int size = scanner.nextInt(), currPlay = scanner.nextInt();
-        Board b = new Board(size, currPlay);
-        String fila;
-        String[] configandcolor = new String[2];
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                configandcolor = (scanner.next()).split("-");
-                b.matrix[i][j] = b.createConfig(b, i, j, new Integer(configandcolor[0]),
-                        new Integer((configandcolor[1])));
+        try {
+            int size = scanner.nextInt(), currPlay = scanner.nextInt();
+            b = new Board(size, currPlay);
+            String fila;
+            String[] configandcolor;
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    configandcolor = (scanner.next()).split("-");
+                    b.matrix[i][j] = b.createConfig(b, i, j, new Integer(configandcolor[0]),
+                            new Integer((configandcolor[1])));
+                }
             }
+            scanner.close();
+        }catch (Exception e){ //si no funciona es porque se modificó el archivo
+            e.getMessage();
         }
-        scanner.close();
         return b;
     }
 
