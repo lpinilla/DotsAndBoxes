@@ -1,6 +1,8 @@
 package Backend;
 
+import java.io.*;
 import java.util.HashSet;
+import java.util.Scanner;
 import java.util.Set;
 
 public class Board { //recordar: sin color == 0
@@ -393,27 +395,28 @@ public class Board { //recordar: sin color == 0
     }
 
     private int boxConfiguration(Box b) {
+
+        if (!b.top && !b.right && !b.bottom && !b.left) return 1; //vacía
+        if(b.top && b.right && b.bottom && b.left) return 2;
         //aristas solas
-        if (b.top && !b.right && !b.bottom && !b.left) return 1;
-        if (!b.top && b.right && !b.bottom && !b.left) return 2;
-        if (!b.top && !b.right && b.bottom && !b.left) return 3;
-        if (!b.top && !b.right && !b.bottom && b.left) return 4;
+        if (b.top && !b.right && !b.bottom && !b.left) return 3;
+        if (!b.top && b.right && !b.bottom && !b.left) return 4;
+        if (!b.top && !b.right && b.bottom && !b.left) return 5;
+        if (!b.top && !b.right && !b.bottom && b.left) return 6;
         //2 aristas conjugadas con la superior
-        if (b.top && b.right && !b.bottom && !b.left) return 5;
-        if (b.top && !b.right && b.bottom && !b.left) return 6;
-        if (b.top && !b.right && !b.bottom && b.left) return 7;
+        if (b.top && b.right && !b.bottom && !b.left) return 7;
+        if (b.top && !b.right && b.bottom && !b.left) return 8;
+        if (b.top && !b.right && !b.bottom && b.left) return 9;
         //2 aristas conjugadas con derecha
-        if (!b.top && b.right && b.bottom && !b.left) return 8;
-        if (!b.top && b.right && !b.bottom && b.left) return 9;
+        if (!b.top && b.right && b.bottom && !b.left) return 10;
+        if (!b.top && b.right && !b.bottom && b.left) return 11;
         //2 aristas conjugadas con inferior
-        if (!b.top && !b.right && b.bottom && b.left) return 10;
+        if (!b.top && !b.right && b.bottom && b.left) return 12;
         //3 aristas
-        if (!b.top && b.right && b.bottom && b.left) return 11;
-        if (b.top && !b.right && b.bottom && b.left) return 12;
-        if (b.top && b.right && !b.bottom && b.left) return 13;
-        if (b.top && b.right && b.bottom && !b.left) return 14;
-        if (!b.top && !b.right && !b.bottom && !b.left) return 15;
-        return 16; //ultimo estado, esta lleno
+        if (!b.top && b.right && b.bottom && b.left) return 13;
+        if (b.top && !b.right && b.bottom && b.left) return 14;
+        if (b.top && b.right && !b.bottom && b.left) return 15;
+        return 16;
     }
 
     @Override
@@ -439,6 +442,89 @@ public class Board { //recordar: sin color == 0
         return nsum - n2sum;
     }
 
-        //Métodos que faltan de juego: saveBoard, loadBoard
-        //Métodos que faltan de IA: existChain, createChain ?
+    public void saveGame(String fileName){
+        try {
+            PrintWriter writer = new PrintWriter("src/test/java/" +fileName + ".txt", "UTF-8");
+            writer.println(size);
+            writer.println(currPlay);
+            String fila;
+            for (int i = 0; i < size; i++) {
+                fila = "";
+                for (int j = 0; j < size; j++) {
+                    fila += boxConfiguration(matrix[i][j]);
+                    fila += "-";
+                    fila += matrix[i][j].color;
+                    fila += " ";
+                }
+                writer.println(fila);
+            }
+            writer.close();
+        }catch (IOException e){
+            e.getMessage(); //hacer algo con la exception. (mostrarla en pantalla)?
+        }
+    }
+
+    public static Board loadGame(String fileName){
+        File f = null;
+        Scanner scanner = null;
+        try{
+            f = new File(fileName + ".txt");
+            scanner = new Scanner(f);
+        }catch(Exception e){
+            e.getMessage();
+        }
+        int size = scanner.nextInt(), currPlay = scanner.nextInt();
+        Board b = new Board(size, currPlay);
+        String fila;
+        String[] configandcolor = new String[2];
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                configandcolor = (scanner.next()).split("-");
+                b.matrix[i][j] = b.createConfig(b, i, j, new Integer(configandcolor[0]),
+                        new Integer((configandcolor[1])));
+            }
+        }
+        scanner.close();
+        return b;
+    }
+
+    private Box createConfig(Board b, int i, int j, int config, int color){
+        switch(config){
+            case 1:
+                    return new Box(false, false, false, false, 0, 0);
+            case 2:
+                    return new Box(true, true, true, true, color, 4);
+            case 3:
+                    return new Box(false,false ,true, false, 0, 1);
+            case 4:
+                    return new Box(false, true, false ,false, 0, 1);
+            case 5:
+                return new Box(false,false ,false, true, 0, 1);
+            case 6:
+                return new Box(true, true, false ,false, 0, 1);
+            case 7:
+                return new Box(false,true,true, false,0,2);
+            case 8:
+                return new Box(false,false,true, true,0,2);
+            case 9:
+                return new Box(true,false,true,false,0,2);
+            case 10:
+                return new Box(false, true, false, true, 0, 2);
+            case 11:
+                return new Box(true, true, false, false, 0, 2);
+            case 12:
+                return new Box(true, false, false, true, 0,2);
+            case 13:
+                return new Box(true, true,false ,true, 0, 3);
+            case 14:
+                return new Box(true, false, true, true, 0, 3);
+            case 15:
+                return new Box(true, true, true, false, 0, 3);
+            case 16:
+                return new Box(false, true, true ,true, 0, 3);
+        }
+        return null;
+    }
+
+
 }

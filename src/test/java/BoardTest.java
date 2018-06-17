@@ -213,4 +213,55 @@ public class BoardTest {
         Set<Board> moves = b4.getPossibleMoves(b4, 2);
     }
 
+    @Test
+    public void saveTest(){
+        Board b2 = new Board(2);
+        b2.saveGame("Test");
+    }
+
+    @Test
+    public void saveTest2(){
+        Board b2 = new Board(2);
+        b2.makeMove(b2,0,0, Board.DIRECTIONS.TOP, 1);
+        b2.makeMove(b2,0,0, Board.DIRECTIONS.BOTTOM, 1);
+        b2.makeMove(b2,0,0, Board.DIRECTIONS.LEFT, 1);
+        b2.makeMove(b2, 1,1, Board.DIRECTIONS.TOP, 1);
+        b2.makeMove(b2, 0,1, Board.DIRECTIONS.RIGHT, 1);
+        b2.saveGame("Test2");
+    }
+
+    @Test
+    public void saveTest3(){
+        Board b2 = new Board(2);
+        b2.makeMove(b2,0,0, Board.DIRECTIONS.TOP, 1);
+        b2.makeMove(b2,0,0, Board.DIRECTIONS.BOTTOM, 1);
+        b2.makeMove(b2,0,0, Board.DIRECTIONS.LEFT, 1);
+        b2.makeMove(b2,0,0, Board.DIRECTIONS.RIGHT, 1);
+        b2.makeMove(b2,1,1, Board.DIRECTIONS.TOP, 2);
+        b2.makeMove(b2,1,1, Board.DIRECTIONS.BOTTOM, 2);
+        b2.makeMove(b2,1,1, Board.DIRECTIONS.LEFT, 2);
+        b2.makeMove(b2,1,1, Board.DIRECTIONS.RIGHT, 2);
+        b2.saveGame("Test3");
+    }
+
+    @Test
+    public void loadTest1(){
+        Board b1 = Board.loadGame("src/test/java/Test");
+        b1.asciiPrintBoard();
+    }
+
+    @Test
+    public void loadTest2(){
+        Board b2 = Board.loadGame("src/test/java/Test2");
+        b2.asciiPrintBoard();
+    }
+
+    @Test
+    public void loadTest3(){
+        Board b3 = Board.loadGame("src/test/java/Test3");
+        b3.asciiPrintBoard();
+    }
+
+
+
 }
