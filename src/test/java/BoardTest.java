@@ -38,7 +38,7 @@ public class BoardTest {
         b.makeMove(b,0,0, Board.DIRECTIONS.TOP,1);
     }
 
-    @Test
+    /*@Test
     public void squareSharedBooleanEdgeCorrectness(){
         excep.expect(RuntimeException.class);
         excep.expectMessage("already an edge");
@@ -68,7 +68,7 @@ public class BoardTest {
         excep.expectMessage("already an edge");
         b.makeMove(b,1, 1, Board.DIRECTIONS.LEFT,1);
         b.makeMove(b,1,0, Board.DIRECTIONS.RIGHT,1);
-    }
+    }*/
 
     @Test
     public void fillBoxTest(){
@@ -94,6 +94,27 @@ public class BoardTest {
         b.makeMove(b,2,1, Board.DIRECTIONS.TOP,1);
         b.makeMove(b,0,1, Board.DIRECTIONS.BOTTOM,1);
         b.colorBox(1,1,1);
+    }
+
+    @Test
+    public void fillBoxByConsequenceTest(){
+        Board b2 = new Board(2);
+        b2.makeMove(b2, 0,0, Board.DIRECTIONS.TOP, 1);
+        b2.makeMove(b2, 0,0, Board.DIRECTIONS.RIGHT, 1);
+        b2.makeMove(b2, 0,0, Board.DIRECTIONS.LEFT, 1);
+        b2.makeMove(b2, 0,0, Board.DIRECTIONS.BOTTOM, 1);
+        b2.makeMove(b2, 0,1, Board.DIRECTIONS.TOP, 1);
+        b2.makeMove(b2, 0,1, Board.DIRECTIONS.RIGHT, 1);
+        b2.makeMove(b2, 0,1, Board.DIRECTIONS.LEFT, 1);
+        b2.makeMove(b2, 0,1, Board.DIRECTIONS.BOTTOM, 1);
+        b2.makeMove(b2, 1,1, Board.DIRECTIONS.BOTTOM, 1);
+        b2.makeMove(b2, 1,1, Board.DIRECTIONS.RIGHT, 1);
+        b2.makeMove(b2, 1,0, Board.DIRECTIONS.BOTTOM, 1);
+        b2.makeMove(b2, 1,0, Board.DIRECTIONS.LEFT, 1);
+
+        //b2.asciiPrintBoard();
+        b2.makeMove(b2, 1,0,Board.DIRECTIONS.RIGHT, 1);
+        assertEquals(1,b2.getBoxColor(1,1));
     }
 
     /*Test para saber si funciona bien el manejo de turnos.

@@ -14,7 +14,7 @@ public class IATest {
 
     @Before
     public void before(){
-        gm = new GameManager();
+        gm = new GameManager(2);
         jarvis = new IA(gm.getBoard(), IA.Mode.DEPTH, 1, 0, 1,2, false);
     }
 

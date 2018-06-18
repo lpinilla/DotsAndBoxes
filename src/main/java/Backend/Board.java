@@ -66,7 +66,7 @@ public class Board { //recordar: sin color == 0
 
     //Agregar una arista dada la posición de la caja y la dirección
     //TODO: cambiar el nombre de las exceptions
-    private void addEdge(Board b, int x, int y, DIRECTIONS dir) {
+    private void addEdge(Board b, int x, int y, DIRECTIONS dir, int color) {
         if (x < 0 || x > b.getMatrix().length || y < 0 || y > b.matrix.length) {
             throw new IllegalArgumentException();
         }
@@ -77,6 +77,9 @@ public class Board { //recordar: sin color == 0
                 if ((x - 1) >= 0) {
                     b.matrix[x - 1][y].bottom = true;
                     b.matrix[x - 1][y].nOfEdges++;
+                    if(hasCompletedSquare(x-1,y)){
+                        colorBox(x-1,y,color);
+                    }
                 }
                 break;
             case RIGHT:
@@ -85,6 +88,9 @@ public class Board { //recordar: sin color == 0
                 if ((y + 1) < size) {
                     b.matrix[x][y + 1].left = true;
                     b.matrix[x][y + 1].nOfEdges++;
+                    if(hasCompletedSquare(x,y+1)){
+                        colorBox(x,y+1, color);
+                    }
                 }
                 break;
             case BOTTOM:
@@ -93,6 +99,9 @@ public class Board { //recordar: sin color == 0
                 if ((x + 1) < size) {
                     b.matrix[x + 1][y].top = true;
                     b.matrix[x + 1][y].nOfEdges++;
+                    if(hasCompletedSquare(x+1,y)){
+                        colorBox(x+1,y,color);
+                    }
                 }
                 break;
             case LEFT:
@@ -101,6 +110,9 @@ public class Board { //recordar: sin color == 0
                 if ((y - 1) >= 0) {
                     b.matrix[x][y - 1].right = true;
                     b.matrix[x][y - 1].nOfEdges++;
+                    if(hasCompletedSquare(x,y-1)){
+                        colorBox(x,y-1,color);
+                    }
                 }
                 break;
         }
@@ -115,7 +127,7 @@ public class Board { //recordar: sin color == 0
             return false;
         }
         if(!hasEdge(b, x,y,dir)){
-            addEdge(b, x, y, dir);
+            addEdge(b, x, y, dir, color);
         }else{
             return false;
         }
@@ -124,7 +136,8 @@ public class Board { //recordar: sin color == 0
             colorBox(x, y, color);
             return true;
         }
-        return checkConsecutiveSquares(x, y, color);
+        //return checkConsecutiveSquares(x, y, color);
+        return false;
     }
 
     private boolean checkConsecutiveSquares(int x, int y, int color){

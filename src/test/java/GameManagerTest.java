@@ -16,7 +16,7 @@ public class GameManagerTest {
 
     @Before
     public void before(){
-        gm = new GameManager();
+        gm = new GameManager(3);
     }
 
     @Test
