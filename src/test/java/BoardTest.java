@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.rules.ExpectedException;
 
+import java.awt.*;
 import java.util.Set;
 
 public class BoardTest {
@@ -30,7 +31,7 @@ public class BoardTest {
         Board b = new Board(-1);
     }
 
-    @Test
+    /*@Test
     public void makeMoveToExistingEdgeTest(){
         excep.expect(RuntimeException.class);
         excep.expectMessage("already an edge");
@@ -38,7 +39,7 @@ public class BoardTest {
         b.makeMove(b,0,0, Board.DIRECTIONS.TOP,1);
     }
 
-    /*@Test
+    @Test
     public void squareSharedBooleanEdgeCorrectness(){
         excep.expect(RuntimeException.class);
         excep.expectMessage("already an edge");
@@ -94,6 +95,17 @@ public class BoardTest {
         b.makeMove(b,2,1, Board.DIRECTIONS.TOP,1);
         b.makeMove(b,0,1, Board.DIRECTIONS.BOTTOM,1);
         b.colorBox(1,1,1);
+    }
+
+    @Test
+    public void fillBoxByConsequence2Test(){
+        Board b2 = new Board(2);
+        b2.makeMove(b2, 0,0, Board.DIRECTIONS.TOP, 1);
+        b2.makeMove(b2, 0,0, Board.DIRECTIONS.LEFT, 1);
+        b2.makeMove(b2, 0,0, Board.DIRECTIONS.RIGHT, 1);
+
+        b2.makeMove(b2, 1,0,Board.DIRECTIONS.TOP,1);
+        b2.asciiPrintBoard();
     }
 
     @Test
@@ -218,7 +230,12 @@ public class BoardTest {
         b2.makeMove(b2,0,0, Board.DIRECTIONS.TOP, 1);
         b2.makeMove(b2,0,0,Board.DIRECTIONS.LEFT, 1);
         b2.makeMove(b2,0,0,Board.DIRECTIONS.RIGHT, 1);
-        //Set<Board> moves = b2.getPossibleMoves(b2, 3);
+        Set<Board> moves = b2.getPossibleMoves(b2, 3);
+        for(Board move : moves){
+            System.out.println(move.hashCode());
+            move.asciiPrintBoard();
+
+        }
         assertEquals(16,b2.getPossibleMoves(b2, 3).size());
     }
 

@@ -28,9 +28,10 @@ public class GameManager {
     }
 
     public void move(int x, int y, Board.DIRECTIONS dir){
-        if(b.makeMove(b, x,y, dir, activePlayer.color)){
+        int moveVal = b.makeMove(b, x,y, dir, activePlayer.color);
+        if( moveVal == 1){
             activePlayer.score++;
-        }else {
+        }else if(moveVal == 0){
             changeTurn();
         }
         b.asciiPrintBoard(); //temporary

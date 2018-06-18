@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 
-public class Board { //recordar: sin color == 0
+public class Board {
 
     //maxPlays indica la cantidad máxima de jugadas posibles.
     //currPlay indica cuantas jugadas se hicieron.
@@ -66,7 +66,7 @@ public class Board { //recordar: sin color == 0
 
     //Agregar una arista dada la posición de la caja y la dirección
     //TODO: cambiar el nombre de las exceptions
-    private void addEdge(Board b, int x, int y, DIRECTIONS dir, int color) {
+    private boolean addEdge(Board b, int x, int y, DIRECTIONS dir, int color) {
         if (x < 0 || x > b.getMatrix().length || y < 0 || y > b.matrix.length) {
             throw new IllegalArgumentException();
         }
@@ -79,6 +79,7 @@ public class Board { //recordar: sin color == 0
                     b.matrix[x - 1][y].nOfEdges++;
                     if(hasCompletedSquare(x-1,y)){
                         colorBox(x-1,y,color);
+                        return true;
                     }
                 }
                 break;
@@ -90,6 +91,7 @@ public class Board { //recordar: sin color == 0
                     b.matrix[x][y + 1].nOfEdges++;
                     if(hasCompletedSquare(x,y+1)){
                         colorBox(x,y+1, color);
+                        return true;
                     }
                 }
                 break;
@@ -101,6 +103,7 @@ public class Board { //recordar: sin color == 0
                     b.matrix[x + 1][y].nOfEdges++;
                     if(hasCompletedSquare(x+1,y)){
                         colorBox(x+1,y,color);
+                        return true;
                     }
                 }
                 break;
@@ -112,60 +115,33 @@ public class Board { //recordar: sin color == 0
                     b.matrix[x][y - 1].nOfEdges++;
                     if(hasCompletedSquare(x,y-1)){
                         colorBox(x,y-1,color);
+                        return true;
                     }
                 }
                 break;
         }
         currPlay++;
         b.matrix[x][y].nOfEdges++;
+        return false;
     }
 
-    public boolean makeMove(Board b,int x, int y, DIRECTIONS dir, int color) {
-        //if(!hasRemainingPlays()) throw new RuntimeException("No more plays");
-        //estaría bueno que retorne otra cosa para distinguir si se acabaron las jugadas o no completó
+    public int makeMove(Board b,int x, int y, DIRECTIONS dir, int color) {
         if (!hasRemainingPlays(b)) {
-            return false;
+            return -2;
         }
+        boolean consequent = false;
         if(!hasEdge(b, x,y,dir)){
-            addEdge(b, x, y, dir, color);
-        }else{
-            return false;
+            consequent = addEdge(b, x, y, dir, color);
+        }else{//ya hay arista
+            return -1;
         }
         //completó algún cuadrado?
         if (hasCompletedSquare(x, y)) {
             colorBox(x, y, color);
-            return true;
+            return 1;
         }
-        //return checkConsecutiveSquares(x, y, color);
-        return false;
-    }
-
-    private boolean checkConsecutiveSquares(int x, int y, int color){
-        if( x-1 >= 0){
-            if(hasCompletedSquare(x-1,y)){
-                colorBox(x-1,y,color);
-                return true;
-            }
-        }
-        if(x+1 < size){
-            if(hasCompletedSquare(x+1, y)){
-                colorBox(x+1,y,color);
-                return true;
-            }
-        }
-        if(y-1 >= 0){
-            if(hasCompletedSquare(x,y-1)){
-                colorBox(x,y-1, color);
-                return true;
-            }
-        }
-        if(y+1 < size){
-            if(hasCompletedSquare(x,y+1)){
-                colorBox(x,y+1, color);
-                return true;
-            }
-        }
-        return false;
+        if(consequent) return 1;
+        return 0;
     }
 
     //Metodo para saber si todavía hay jugadas por hacer.
@@ -279,17 +255,20 @@ public class Board { //recordar: sin color == 0
     private void getPossibleMovesRec(Board b, Set<Board> set, int color){
         if(!hasRemainingPlays(b)){
             set.add(b);
+            b.asciiPrintBoard();
             return;
         }
         Board aux;
+        int moveret;
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 for(DIRECTIONS dir : DIRECTIONS.values()){
                     if(!hasEdge(b, i,j,dir)){
                         aux = b.cloneBoard();
-                        if(aux.makeMove(aux, i,j,dir, color)){
+                        moveret = aux.makeMove(aux, i,j,dir, color);
+                        if(moveret == 1){
                             getPossibleMovesRec(aux, set, color);
-                        }else{
+                        }else if (moveret == 0){
                             set.add(aux);
                         }
                     }
