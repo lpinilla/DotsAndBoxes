@@ -18,8 +18,7 @@ public class GameManager {
     private Board b;
     private GAME_STATUS gameStatus;
 
-    public GameManager(){
-        int size = 2;
+    public GameManager(int size){;
         b = new Board(size);
         players = new Player[2];
         players[0] = new Player(1);
