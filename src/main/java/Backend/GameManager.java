@@ -12,19 +12,37 @@ public class GameManager {
     }
 
     public enum GAME_STATUS { PLAYING, OVER}
+    public enum GAME_MODE { HVSH, IAVSH, HVSAI, AIVSAI};
 
     private Player activePlayer;
-    private Player[] players;
+    private Player[] players; //siempre el humano va a ser el 0
     private Board b;
     public GAME_STATUS gameStatus;
+    private IA ia;
+    public boolean playerTurn;
 
-    public GameManager(int size){
+    public GameManager(int size, GAME_MODE game_mode){ //no IA
         b = new Board(size);
         players = new Player[2];
         players[0] = new Player(1);
         players[1] = new Player(2);
-        activePlayer = players[0];
+        activePlayer = players[0]; //esto puede variar
         gameStatus = GAME_STATUS.PLAYING;
+    }
+
+    public GameManager(int size, IA.Mode iaMode, int maxDepth,
+                       long totalTime, boolean prune, GAME_MODE game_mode){
+        b = new Board(size);
+        players = new Player[] {new Player(1), new Player(2)};
+        if(game_mode == GAME_MODE.HVSH || game_mode == GAME_MODE.HVSAI) {
+            activePlayer = players[0]; //esto puede variar
+            playerTurn = true;
+        }else{
+            activePlayer = players[1];
+            playerTurn = false;
+        }
+        gameStatus = GAME_STATUS.PLAYING;
+        ia = new IA(getBoard() ,iaMode,maxDepth,totalTime,2,1,prune);
     }
 
     public void move(int x, int y, Board.DIRECTIONS dir){
@@ -65,8 +83,10 @@ public class GameManager {
     public void changeTurn(){
         if(activePlayer == players[0]){
             activePlayer = players[1];
+            playerTurn = false;
         }else{
             activePlayer = players[0];
+            playerTurn = true;
         }
     }
 
@@ -79,5 +99,15 @@ public class GameManager {
             return 1;
         }
         return 2;
+    }
+
+    public Board aiMove(){
+        System.out.println("entering IA");
+        this.b = ia.miniMax();
+        return b;
+    }
+
+    public void setBoard(Board b){
+        this.b = b;
     }
 }

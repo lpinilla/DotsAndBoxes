@@ -14,18 +14,20 @@ public class GameUI2 extends  JPanel{
     private JButton undoButton, playButton;
     private JComboBox xCoor, yCoor, dir;
     static private JLabel label;
-    private JPanel infoContainer, Drawable;
+    private JPanel Drawable;
 
     static int boardSize = 3;
     static int[] startingPos = new int[] { 20,20};
     static int pointSpacing = 50;
     static  GameManager gm;
     static Board backBoard;
+    static GameManager.GAME_MODE game_mode = GameManager.GAME_MODE.HVSAI;
+    static JPanel infoContainer;
 
 
 
     public GameUI2(){ //se mira no se toca
-        gm = new GameManager(boardSize-1);
+        gm = new GameManager(boardSize-1, IA.Mode.DEPTH, 1,0,true, GameManager.GAME_MODE.HVSAI);
         backBoard = gm.getBoard();
         label = new JLabel();
         label.setText("Player " + gm.whoIsActivePlayer());
@@ -116,10 +118,11 @@ public class GameUI2 extends  JPanel{
                     case 3:
                         direction = Board.DIRECTIONS.LEFT;
                 }
-                System.out.println("x:" + x + " y:" + y);
-                play(x,y,direction, infoContainer);
+                play(x,y,direction);
                 label.setText("Player " + gm.whoIsActivePlayer());
                 label.repaint();
+                backBoard = gm.aiMove();
+                rePaintBoard();
             }
         });
     }
@@ -136,14 +139,24 @@ public class GameUI2 extends  JPanel{
         frame.setVisible(true);
         frame.add(ui.infoContainer, BorderLayout.NORTH);
         ui.infoContainer.repaint();
-        //wantToPlay()
+        //wantToPlay();
     }
 
-    public void wantToPlay(){
+    public static void wantToPlay(){
         while(gm.gameStatus != GameManager.GAME_STATUS.OVER){
-
+            //System.out.println("playing");
+            System.out.println(gm.playerTurn);
+            if(game_mode != GameManager.GAME_MODE.HVSH) {
+                if (gm.playerTurn) { //si es turno de humann
+                    //wait for click
+                    //no need to put anything
+                } else {
+                    gm.aiMove();
+                    rePaintBoard();
+                    //System.out.println("waiting..");
+                }
+            }
         }
-
         int winner = gm.whoWins();
         if (winner != 0) {
             JOptionPane.showMessageDialog(null, "Player " + winner + " Wins!");
@@ -152,20 +165,20 @@ public class GameUI2 extends  JPanel{
         }
     }
 
-    public static void play(int x, int y, Board.DIRECTIONS direction, JPanel infoContainer){
+    public static void play(int x, int y, Board.DIRECTIONS direction){
         if(gm.gameStatus == GameManager.GAME_STATUS.PLAYING){
             gm.move(x,y,direction);
-            JPanel newBoard = new myBoard();
-            newBoard.setPreferredSize(new Dimension(50,1100));
-            infoContainer.add(newBoard, BorderLayout.PAGE_END);
-            infoContainer.repaint();
+            rePaintBoard();
         }else {
-
+            JOptionPane.showMessageDialog(null, "Player 1  Wins!"); //TODO change
         }
     }
 
     private static void rePaintBoard(){
-
+        JPanel newBoard = new myBoard();
+        newBoard.setPreferredSize(new Dimension(50,1100));
+        infoContainer.add(newBoard, BorderLayout.PAGE_END);
+        infoContainer.repaint();
     }
 
     private void pressClearButton() {

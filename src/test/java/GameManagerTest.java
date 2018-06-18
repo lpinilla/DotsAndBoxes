@@ -14,7 +14,7 @@ public class GameManagerTest {
 
     GameManager gm;
 
-    @Before
+    /*@Before
     public void before(){
         gm = new GameManager(3);
     }
@@ -24,6 +24,6 @@ public class GameManagerTest {
         Object player1 = gm.getCurrentPlayer();
         gm.changeTurn();
         assertFalse(player1 == gm.getCurrentPlayer());
-    }
+    }*/
 
 }

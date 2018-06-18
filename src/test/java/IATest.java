@@ -14,7 +14,7 @@ public class IATest {
 
     @Before
     public void before(){
-        gm = new GameManager(2);
+        gm = new GameManager(2, IA.Mode.DEPTH, 1,0,true, GameManager.GAME_MODE.HVSAI);
         jarvis = new IA(gm.getBoard(), IA.Mode.DEPTH, 1, 0, 1,2, false);
     }
 
@@ -142,6 +142,23 @@ public class IATest {
         //b.asciiPrintBoard();
         Board best = jarvis.depthMinimax();
         best.asciiPrintBoard();
+    }
+
+    @Test
+    public void firstChoiceTest(){
+        Board b2 = new Board(2);
+        b2.makeMove(b2, 0,0,Board.DIRECTIONS.TOP, 1);
+        jarvis = new IA(b2, IA.Mode.DEPTH, 1, 0,2,1,false);
+        Board solution = jarvis.miniMax();
+        solution.asciiPrintBoard();
+    }
+
+    @Test
+    public void firstChoiceTest2(){
+        gm.move(0,0,Board.DIRECTIONS.TOP);
+        //gm.getBoard().asciiPrintBoard();
+        gm.setBoard(jarvis.miniMax());
+        gm.getBoard().asciiPrintBoard();
     }
 
 }

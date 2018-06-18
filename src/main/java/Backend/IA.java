@@ -40,37 +40,20 @@ public class IA {
         Board sol;
         if(activeMode == Mode.DEPTH){
             sol = depthMinimax();
-            b = new Board(b.size, sol.getCurrPlay());
+            //b = new Board(b.size, sol.getCurrPlay());
         }else{
-            b = timeMinimax();
+            sol = timeMinimax();
         }
-        return b;
+        this.b = sol;
+        return sol;
     }
 
 
     //Evaluates the board
-    //first approach to heuristic
-    private int evaluate(Board b){
-        return b.numberOfCapturableBoxes(); //vieja heurística
-    }
 
     private int evaluate2(Board b){
         return b.differenceInBoxesOfColor(color, otherPlayerColor);
     }
-
-    /*public Board depthMinimax() {
-        Board bestMove = null;
-        int bestVal = Integer.MIN_VALUE;
-        Solution aux;
-        for (Board move : b.getPossibleMoves(b, color)) {
-            aux = dMinimax(move, 0, maxDepth, true);
-            if (aux.score > bestVal) {
-                bestVal = aux;
-                bestMove = move;
-            }
-        }
-        return bestMove;
-    }*/
 
     public Board depthMinimax(){
         return  dMinimax(b, 0, maxDepth, true, Integer.MIN_VALUE,
@@ -159,7 +142,7 @@ public class IA {
     }
 
 
-    /*
+    /* para DOT file
     public void saveGame(String fileName){
         try {
             PrintWriter writer = new PrintWriter("src/test/java/" +fileName + ".txt", "UTF-8");
