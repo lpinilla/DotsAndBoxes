@@ -2,12 +2,15 @@ package FrontEnd;
 
 import javax.swing.*;
 import javax.swing.event.ListDataListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class GameUI {
 
-    private static int boardSize = 2; //testing
+    private static int boardSize = 3; //testing
     private JButton playButton;
-    private JButton clearButton;
+    private JButton undoButton;
     private JComboBox Dir;
     private JComboBox YCoor;
     private JComboBox XCoor;
@@ -18,6 +21,20 @@ public class GameUI {
     public GameUI(){
         populateComboBox(XCoor);
         populateComboBox(YCoor);
+        undoButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                pressClearButton();
+            }
+        });
+    }
+
+    private void pressClearButton(){
+        this.XCoor.setSelectedIndex(0);
+        XCoor.repaint();
+        this.YCoor.setSelectedIndex(0);
+        YCoor.repaint();
+        this.Dir.setSelectedIndex(0);
     }
 
 
@@ -59,21 +76,18 @@ public class GameUI {
             }
 
             @Override
-            public void addListDataListener(ListDataListener listDataListener) {
-
-            }
+            public void addListDataListener(ListDataListener listDataListener) {}
 
             @Override
-            public void removeListDataListener(ListDataListener listDataListener) {
-
-            }
+            public void removeListDataListener(ListDataListener listDataListener) {}
         };
+
         comboBox.setModel(cbm);
         comboBox.setMaximumRowCount(aux.length);
     }
 
 
     private void createPoints(JPanel p){
-
+        
     }
 }

@@ -53,6 +53,19 @@ public class IATest {
         best.asciiPrintBoard();
     }
 
+    @Test
+    public void completeSquareIABig(){
+        Board b = new Board(6);
+        jarvis = new IA(b, IA.Mode.DEPTH, 3, 0,1,2,false);
+        jarvis = new IA(b, IA.Mode.DEPTH, 1, 0,1,2, false);
+        b.makeMove(b, 0,0, Board.DIRECTIONS.TOP, 1);
+        b.makeMove(b, 0,0, Board.DIRECTIONS.RIGHT, 1);
+        b.makeMove(b, 0,0, Board.DIRECTIONS.LEFT, 1);
+        b.asciiPrintBoard();
+        Board best = jarvis.depthMinimax();
+        best.asciiPrintBoard();
+    }
+
     //Time tests
 
     @Test

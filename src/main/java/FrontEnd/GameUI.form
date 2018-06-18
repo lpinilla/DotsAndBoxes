@@ -61,12 +61,12 @@
             </constraints>
             <properties/>
           </component>
-          <component id="bb8e4" class="javax.swing.JButton" binding="clearButton" default-binding="true">
+          <component id="bb8e4" class="javax.swing.JButton" binding="undoButton" default-binding="true">
             <constraints>
               <grid row="2" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Clear"/>
+              <text value="Undo"/>
             </properties>
           </component>
         </children>
