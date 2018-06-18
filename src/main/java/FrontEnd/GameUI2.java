@@ -13,21 +13,24 @@ public class GameUI2 extends  JPanel{
 
     private JButton undoButton, playButton;
     private JComboBox xCoor, yCoor, dir;
-    private JLabel label;
+    static private JLabel label;
     private JPanel infoContainer, Drawable;
-    private int boardSize = 3;
 
+    static int boardSize = 3;
     static int[] startingPos = new int[] { 20,20};
     static int pointSpacing = 50;
+    static  GameManager gm;
+    static Board backBoard;
 
 
 
     public GameUI2(){
-        GameManager gm = new GameManager(boardSize-1);
+        gm = new GameManager(boardSize-1);
+        backBoard = gm.getBoard();
         label = new JLabel();
         label.setText("Dots and Boxes");
         String[] aux = new String[boardSize];
-        for (int i = 0; i < boardSize; i++) {
+        for (int i = 0; i < boardSize-1; i++) {
             aux[i] = Integer.toString(i);
         }
         xCoor = new JComboBox();
@@ -88,9 +91,8 @@ public class GameUI2 extends  JPanel{
         infoContainer.add(auxPanel1, BorderLayout.CENTER);
         //End buttons
 
-        JPanel boardUI = new myBoard(boardSize);
+        JPanel boardUI = new myBoard();
         boardUI.setPreferredSize(new Dimension(50,1100));
-
         infoContainer.add(boardUI, BorderLayout.PAGE_END);
 
         infoContainer.setBackground(Color.YELLOW); //testing purposes
@@ -100,7 +102,7 @@ public class GameUI2 extends  JPanel{
                 //OBTENER DATOS
                 int x = xCoor.getSelectedIndex();
                 int y = yCoor.getSelectedIndex();
-                Board.DIRECTIONS direction;
+                Board.DIRECTIONS direction = null;
                 switch (dir.getSelectedIndex()){
                     case 0:
                         direction = Board.DIRECTIONS.TOP;
@@ -117,7 +119,7 @@ public class GameUI2 extends  JPanel{
                 //verificar que este
 
                 //CONECTAR CON BACK
-
+                play(x,y,direction, infoContainer);
                 //pintar de nuevo el tablero
                  //paintnewBoard();
             }
@@ -132,11 +134,33 @@ public class GameUI2 extends  JPanel{
         frame.setMinimumSize(new Dimension(820,900));
         frame.setPreferredSize(new Dimension(820,900));
         frame.setLocation(650,100);
-        //frame.pack();
+        //frame.pack(); //me cambia to-do
         frame.setVisible(true);
         frame.add(ui.infoContainer, BorderLayout.NORTH);
         ui.infoContainer.repaint();
-        ui.drawLine(ui.Drawable);
+        //wantToPlay()
+    }
+
+    public static void play(int x, int y, Board.DIRECTIONS direction, JPanel infoContainer){
+        if(gm.gameStatus == GameManager.GAME_STATUS.PLAYING){
+            gm.move(x,y,direction);
+            JPanel newBoard = new myBoard();
+            newBoard.setPreferredSize(new Dimension(50,1100));
+            infoContainer.add(newBoard, BorderLayout.PAGE_END);
+            infoContainer.repaint();
+        }else {
+            int winner = gm.whoWins();
+            if (winner != 0) {
+                label.setText("Player " + winner + " Wins!");
+            } else {
+                label.setText("is a Tie!");
+            }
+            label.repaint();
+        }
+    }
+
+    private static void rePaintBoard(){
+
     }
 
     private void pressClearButton() {
@@ -186,17 +210,11 @@ public class GameUI2 extends  JPanel{
         comboBox.setMaximumRowCount(aux.length);
     }
 
-    private class myBoard extends JPanel{
-
-        int boardSize;
-
-        public myBoard(int size){
-            super();
-            boardSize = size;
-        }
+    private static class myBoard extends JPanel{
 
         public void paint(Graphics g){
             int pointSize = 15;
+            //dots ESTO VA SI O SI
             for (int i = 0; i < boardSize; i++) {
                 for (int j = 0; j < boardSize; j++) {
                     g.fillRoundRect(i * pointSpacing + startingPos[0],j * pointSpacing + startingPos[1],
@@ -204,11 +222,26 @@ public class GameUI2 extends  JPanel{
                 }
             }
 
-        }
-    }
+            //AHORA LAS EDGES
+            for (int i = 0; i < boardSize -1; i++) {
+                for (int j = 0; j < boardSize -1; j++) {
+                    if(backBoard.hasEdge(backBoard,i,j, Board.DIRECTIONS.TOP)){
+                        /*g.drawLine(i + startingPos[0], j + startingPos[1],
+                                i + startingPos[0] + pointSize, j + startingPos[1]);*/
+                        g.fillRect(i + startingPos[0] + pointSize / 2, j + startingPos[1] + pointSize / 2,
+                                3 * pointSize, pointSize / 3);
+                    }
+                    if(backBoard.hasEdge(backBoard,i,j, Board.DIRECTIONS.RIGHT)){
 
-    private void drawLine(JPanel myBoard){
-        Graphics g = myBoard.getGraphics();
-        g.drawLine(10,10,100,100);
+                    }
+                    if(backBoard.hasEdge(backBoard,i,j, Board.DIRECTIONS.BOTTOM)){
+                        g.drawLine(i + startingPos[0], (j+1) + startingPos[1], pointSize, pointSize);
+                    }
+                    if(backBoard.hasEdge(backBoard,i,j, Board.DIRECTIONS.LEFT)){
+
+                    }
+                }
+            }
+        }
     }
 }

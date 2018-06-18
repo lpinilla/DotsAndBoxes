@@ -11,30 +11,20 @@ public class GameManager {
         }
     }
 
-    enum GAME_STATUS { PLAYING, OVER}
+    public enum GAME_STATUS { PLAYING, OVER}
 
     private Player activePlayer;
     private Player[] players;
     private Board b;
-    private GAME_STATUS gameStatus;
+    public GAME_STATUS gameStatus;
 
-    public GameManager(int size){;
+    public GameManager(int size){
         b = new Board(size);
         players = new Player[2];
         players[0] = new Player(1);
         players[1] = new Player(2);
         activePlayer = players[0];
         gameStatus = GAME_STATUS.PLAYING;
-    }
-
-    public void play(){ //tal vez convenga boolean
-        while(b.hasRemainingPlays(b)){
-            //read input
-            //move(input);
-            //updateBoard();
-        }
-        gameStatus = GAME_STATUS.OVER;
-
     }
 
     public void move(int x, int y, Board.DIRECTIONS dir){
@@ -55,6 +45,15 @@ public class GameManager {
 
     public void gameOver(){
         //do something
+    }
+
+    public int whoWins(){
+        if(players[0].score > players[1].score){
+            return 1;
+        } else if(players[0].score < players[1].score){
+            return 2;
+        }
+        return 0;
     }
 
     public Player getCurrentPlayer(){

@@ -165,7 +165,11 @@ public class Board { //recordar: sin color == 0
         if (!hasRemainingPlays(b)) {
             return false;
         }
-        addEdge(b, x, y, dir);
+        if(!hasEdge(b, x,y,dir)){
+            addEdge(b, x, y, dir);
+        }else{
+            return false;
+        }
         //completó algún cuadrado?
         if (hasCompletedSquare(x, y)) {
             colorBox(x, y, color);
