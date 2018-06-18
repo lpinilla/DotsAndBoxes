@@ -30,10 +30,11 @@ public class GameManager {
     public void move(int x, int y, Board.DIRECTIONS dir){
         if(b.makeMove(b, x,y, dir, activePlayer.color)){
             activePlayer.score++;
+        }else {
+            changeTurn();
         }
-        changeTurn();
         b.asciiPrintBoard(); //temporary
-        //checkIfIsGameOver();
+        checkIfIsGameOver();
     }
 
     private void checkIfIsGameOver(){
@@ -70,5 +71,12 @@ public class GameManager {
 
     public Board getBoard(){
         return this.b;
+    }
+
+    public int whoIsActivePlayer(){
+        if(activePlayer == players[0]){
+            return 1;
+        }
+        return 2;
     }
 }

@@ -24,12 +24,12 @@ public class GameUI2 extends  JPanel{
 
 
 
-    public GameUI2(){
+    public GameUI2(){ //se mira no se toca
         gm = new GameManager(boardSize-1);
         backBoard = gm.getBoard();
         label = new JLabel();
-        label.setText("Dots and Boxes");
-        String[] aux = new String[boardSize];
+        label.setText("Player " + gm.whoIsActivePlayer());
+        String[] aux = new String[boardSize -1];
         for (int i = 0; i < boardSize-1; i++) {
             aux[i] = Integer.toString(i);
         }
@@ -40,7 +40,7 @@ public class GameUI2 extends  JPanel{
         playButton = new JButton();
         populateComboBox(xCoor, aux);
         populateComboBox(yCoor, aux);
-        populateComboBox(dir, new String[] {"TOP", "RIGHT", "LEFT", "DOWN"});
+        populateComboBox(dir, new String[] {"TOP", "RIGHT", "DOWN", "LEFT"});
         undoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -116,12 +116,10 @@ public class GameUI2 extends  JPanel{
                     case 3:
                         direction = Board.DIRECTIONS.LEFT;
                 }
-                //verificar que este
-
-                //CONECTAR CON BACK
+                System.out.println("x:" + x + " y:" + y);
                 play(x,y,direction, infoContainer);
-                //pintar de nuevo el tablero
-                 //paintnewBoard();
+                label.setText("Player " + gm.whoIsActivePlayer());
+                label.repaint();
             }
         });
     }
@@ -141,6 +139,19 @@ public class GameUI2 extends  JPanel{
         //wantToPlay()
     }
 
+    public void wantToPlay(){
+        while(gm.gameStatus != GameManager.GAME_STATUS.OVER){
+
+        }
+
+        int winner = gm.whoWins();
+        if (winner != 0) {
+            JOptionPane.showMessageDialog(null, "Player " + winner + " Wins!");
+        } else {
+            JOptionPane.showMessageDialog(null, "It's a Tie!");
+        }
+    }
+
     public static void play(int x, int y, Board.DIRECTIONS direction, JPanel infoContainer){
         if(gm.gameStatus == GameManager.GAME_STATUS.PLAYING){
             gm.move(x,y,direction);
@@ -149,13 +160,7 @@ public class GameUI2 extends  JPanel{
             infoContainer.add(newBoard, BorderLayout.PAGE_END);
             infoContainer.repaint();
         }else {
-            int winner = gm.whoWins();
-            if (winner != 0) {
-                label.setText("Player " + winner + " Wins!");
-            } else {
-                label.setText("is a Tie!");
-            }
-            label.repaint();
+
         }
     }
 
@@ -221,24 +226,41 @@ public class GameUI2 extends  JPanel{
                             pointSize,pointSize,pointSize,pointSize); //x, y, widht, height, arcwidth, archeight
                 }
             }
-
-            //AHORA LAS EDGES
+            //AHORA LAS EDGES Y BOXES
             for (int i = 0; i < boardSize -1; i++) {
                 for (int j = 0; j < boardSize -1; j++) {
                     if(backBoard.hasEdge(backBoard,i,j, Board.DIRECTIONS.TOP)){
-                        /*g.drawLine(i + startingPos[0], j + startingPos[1],
-                                i + startingPos[0] + pointSize, j + startingPos[1]);*/
-                        g.fillRect(i + startingPos[0] + pointSize / 2, j + startingPos[1] + pointSize / 2,
+                        g.fillRect(j * pointSpacing +  startingPos[0] + pointSize /2,
+                                i * pointSpacing + startingPos[1] + pointSize / 2,
                                 3 * pointSize, pointSize / 3);
                     }
                     if(backBoard.hasEdge(backBoard,i,j, Board.DIRECTIONS.RIGHT)){
-
+                        g.fillRect((j+1) * pointSpacing +  startingPos[0] + pointSize /2,
+                                i * pointSpacing + startingPos[1] + pointSize / 2,
+                                pointSize / 3,  3 * pointSize);
                     }
                     if(backBoard.hasEdge(backBoard,i,j, Board.DIRECTIONS.BOTTOM)){
-                        g.drawLine(i + startingPos[0], (j+1) + startingPos[1], pointSize, pointSize);
+                        g.fillRect(j * pointSpacing +  startingPos[0] + pointSize /2,
+                                (i+1) * pointSpacing + startingPos[1] + pointSize / 2,
+                                3 * pointSize, pointSize / 3);
                     }
                     if(backBoard.hasEdge(backBoard,i,j, Board.DIRECTIONS.LEFT)){
-
+                        g.fillRect((j) * pointSpacing +  startingPos[0] + pointSize /2,
+                                i * pointSpacing + startingPos[1] + pointSize / 2,
+                                pointSize / 3,  3 * pointSize);
+                    }
+                    //g.setColor(Color.blue);
+                    int boxColor = backBoard.getBoxColor(i,j);
+                    if(boxColor != 0){
+                        if(boxColor == 1) {
+                            g.setColor(Color.RED);
+                        }else{
+                            g.setColor(Color.BLUE);
+                        }
+                        g.fillRect((j) * pointSpacing + startingPos[0] + pointSize,
+                                i * pointSpacing + startingPos[1] + pointSize,
+                                pointSpacing - pointSize, pointSpacing - pointSize);
+                        g.setColor(Color.black);
                     }
                 }
             }

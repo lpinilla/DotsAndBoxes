@@ -108,57 +108,6 @@ public class Board { //recordar: sin color == 0
         b.matrix[x][y].nOfEdges++;
     }
 
-    private void removeEdge(int x, int y, DIRECTIONS dir) {
-        if (hasEdge(this,x, y, dir)) {
-            switch (dir) {
-                case TOP:
-                    matrix[x][y].top = false;
-                    if ((x - 1) >= 0) {
-                        this.matrix[x - 1][y].bottom = false;
-                        if(matrix[x-1][y].nOfEdges == 4){
-                            matrix[x-1][y].color = 0;
-                        }
-                        this.matrix[x - 1][y].nOfEdges--;
-                    }
-                    break;
-                case RIGHT:
-                    matrix[x][y].right = false;
-                    if ((y + 1) < size) {
-                        this.matrix[x][y + 1].left = false;
-                        if(matrix[x][y + 1].nOfEdges == 4){
-                            matrix[x][y + 1].color = 0;
-                        }
-                        this.matrix[x][y + 1].nOfEdges--;
-                    }
-                    break;
-                case BOTTOM:
-                    matrix[x][y].bottom = false;
-                    if ((x + 1) < size) {
-                        this.matrix[x + 1][y].top = false;
-                        if(matrix[x + 1][y].nOfEdges == 4){
-                            matrix[x + 1][y].color = 0;
-                        }
-                        this.matrix[x + 1][y].nOfEdges++;
-                    }
-                    break;
-                case LEFT:
-                    matrix[x][y].left = false;
-                    if ((y - 1) >= 0) {
-                        this.matrix[x][y - 1].right = true;
-                        if(matrix[x][y - 1].nOfEdges == 4){
-                            matrix[x][y-1].color = 0;
-                        }
-                        this.matrix[x][y - 1].nOfEdges--;
-                    }
-                    break;
-            }
-            if (matrix[x][y].nOfEdges == 4) {
-                matrix[x][y].color = 0;
-            }
-            matrix[x][y].nOfEdges--;
-        }
-    }
-
     public boolean makeMove(Board b,int x, int y, DIRECTIONS dir, int color) {
         //if(!hasRemainingPlays()) throw new RuntimeException("No more plays");
         //estaría bueno que retorne otra cosa para distinguir si se acabaron las jugadas o no completó
@@ -223,6 +172,10 @@ public class Board { //recordar: sin color == 0
         matrix[x][y].color = color;
     }
 
+    public int getBoxColor(int x, int y){
+        return matrix[x][y].color;
+    }
+
     //Creando la matriz de tipo Box.
     private void createMatrix(Box[][] m, int n) {
         for (int i = 0; i < n; i++) {
@@ -246,7 +199,7 @@ public class Board { //recordar: sin color == 0
         return false;
     }
 
-    //métodos de la vieja heurística
+    //método de la vieja heurística
     public int numberOfCapturableBoxes() {
         int ret = 0;
         for (int i = 0; i < size; i++) {
