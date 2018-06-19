@@ -132,7 +132,7 @@ public class GameManager {
     public Board aiMove(){
         isAiPlaying = true;
         this.b = ia1.miniMax();
-        b.asciiPrintBoard();
+        b.asciiPrintBoard(new StringBuffer());
         isAiPlaying = false;
         changeTurn();
         checkIfIsGameOver();

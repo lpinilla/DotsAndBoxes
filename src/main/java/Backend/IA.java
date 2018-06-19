@@ -1,9 +1,15 @@
 package Backend;
 
+import jdk.nashorn.internal.runtime.regexp.joni.Regex;
+
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
 
 public class IA {
 
@@ -24,6 +30,11 @@ public class IA {
     private int maxDepth, color, otherPlayerColor;
     private boolean prune;
 
+    //.dot objects
+    private Queue<String> dotFileBuilder;
+    private ByteArrayOutputStream baos;
+    private PrintStream ps, original;
+
     private final long TOTALTIME;
 
     public IA(Board b, Mode m, int maxDepth, long totalTime, int color, int otherPlayerColor, boolean prune){
@@ -34,9 +45,13 @@ public class IA {
         this.maxDepth = maxDepth;
         this.TOTALTIME = totalTime;
         this.prune = prune;
+        dotFileBuilder = new LinkedList<>();
+        baos = new ByteArrayOutputStream();
+        ps = new PrintStream(baos);
     }
 
     public Board miniMax(){
+        dotFileBuilder.offer("digraph Tree{");
         Board sol;
         if(activeMode == Mode.DEPTH){
             sol = depthMinimax();
@@ -45,6 +60,7 @@ public class IA {
             sol = timeMinimax();
         }
         this.b = sol;
+        dotFileBuilder.offer("}");
         return sol;
     }
 
@@ -62,7 +78,7 @@ public class IA {
     }
 
     public Board depthMinimax(){
-        return  dMinimax(b, 0, maxDepth, true, Integer.MIN_VALUE,
+        return dMinimax(b, 0, maxDepth, true, Integer.MIN_VALUE,
                 Integer.MAX_VALUE, new HashMap<Board, Integer>()).move;
     }
 
@@ -76,9 +92,16 @@ public class IA {
         }
         int bestVal;
         Solution bestSol = null, aux;
+        StringBuffer dotBuilderCurrentBoard = new StringBuffer(), dotBuilderNewBoard = new StringBuffer();
         if(isMax) {
             bestVal = Integer.MIN_VALUE;
             for (Board nBoard : b.getPossibleMoves(b, this.color)) {
+                //dot file print
+                b.asciiPrintBoard(dotBuilderCurrentBoard);
+                nBoard.asciiPrintBoard(dotBuilderNewBoard);
+                dotFileBuilder.offer("\"" + dotBuilderCurrentBoard + "\"" + "->" +
+                                        "\"" + dotBuilderNewBoard + "\"");
+
                 if(!map.containsKey(nBoard)) {
                     aux = dMinimax(nBoard, currDepth + 1, maxDepth, false, alpha, beta, map);
                     map.put(nBoard, aux.score);
@@ -86,13 +109,17 @@ public class IA {
                     aux = new Solution(nBoard, map.get(nBoard));
                 }
                 if(aux != null &&  (bestSol == null || bestVal < aux.score)){
+                    dotFileBuilder.offer("\"" + dotBuilderNewBoard + "\"" + "[style=filled,color=green]");
                     bestVal = aux.score;
                     bestSol = aux;
                 }
                 alpha = Math.max(alpha, bestVal);
                 if(this.prune && beta <= alpha){
+                    dotFileBuilder.offer("\"" + dotBuilderNewBoard + "\"" + "[style=filled,color=red]");
                     break;
                 }
+                dotBuilderCurrentBoard = new StringBuffer();
+                dotBuilderNewBoard = new StringBuffer();
             }
             return bestSol;
         }else {
@@ -100,6 +127,12 @@ public class IA {
             bestSol = null;
             aux = null;
             for (Board nBoard : b.getPossibleMoves(b, otherPlayerColor)) {
+
+                b.asciiPrintBoard(dotBuilderCurrentBoard);
+                nBoard.asciiPrintBoard(dotBuilderNewBoard);
+                dotFileBuilder.offer("\"" + dotBuilderCurrentBoard + "\"" + "->" +
+                        "\"" + dotBuilderNewBoard + "\"");
+
                 if(!map.containsKey(nBoard)) {
                     aux = dMinimax(nBoard, currDepth + 1, maxDepth, true, alpha, beta, map);
                     map.put(nBoard, aux.score);
@@ -107,11 +140,13 @@ public class IA {
                     aux = new Solution(nBoard, map.get(nBoard));
                 }
                 if (aux != null && (bestSol == null || bestVal > aux.score)) {
+                    dotFileBuilder.offer("\"" + dotBuilderNewBoard + "\"" + "[style=filled,color=blue]");
                     bestVal = aux.score;
                     bestSol = aux;
                 }
                 beta = Math.min(beta, bestVal);
                 if(prune && beta <= alpha){
+                    dotFileBuilder.offer("\"" + dotBuilderNewBoard + "\"" + "[style=filled,color=red]");
                     break;
                 }
             }
@@ -147,42 +182,33 @@ public class IA {
         return System.currentTimeMillis() <= maxTime;
     }
 
+    private void createDotFileEntry(Board curr, Board newBoard,
+                                    String dotBuilderCurrentBoard,String dotBuilderNewBoard){
+        changeOutputStream();
+        curr.asciiPrintBoard(new StringBuffer());
+        dotBuilderCurrentBoard = baos.toString();
+        System.out.flush();
+        newBoard.asciiPrintBoard(new StringBuffer());
+        dotBuilderNewBoard = baos.toString();
+        resetOutputStream();
+        dotFileBuilder.offer(dotBuilderCurrentBoard + "->" + dotBuilderNewBoard);
+    }
+    private void changeOutputStream(){
+        original = System.out;
+        System.setOut(ps);
+    }
 
-    /* para DOT file
-    public void saveGame(String fileName){
-        try {
-            PrintWriter writer = new PrintWriter("src/test/java/" +fileName + ".txt", "UTF-8");
-            writer.println(size);
-            writer.println(currPlay);
-            StringBuffer fila;
-            for (int i = 0; i < size; i++) {
-                fila = new StringBuffer();
-                for (int j = 0; j < size; j++) {
-                    fila.append(boxConfiguration(matrix[i][j]));
-                    fila.append("-");
-                    fila.append(matrix[i][j].color);
-                    fila.append(" ");
-                }
-                writer.println(fila);
-            }
-            writer.close();
-        }catch (IOException e){
-            e.getMessage(); //hacer algo con la exception. (mostrarla en pantalla)?
-        }
-    }*/
+    private void resetOutputStream(){
+        System.out.flush();
+        System.setOut(original);
+    }
 
     public void saveDOTFile(){
         try{
             PrintWriter writer = new PrintWriter("src/main/java/SavedGames/TreeSave.dot", "UTF-8");
-            //writer.pritnln a partir de acá
-            /*
-            En cada pasada: Indicar b->nMove
-            nMove [estilos]
-            en selección de best
-            nMove [estilos2]
-            en poda
-            nMode[estilo3]
-             */
+            while(!dotFileBuilder.isEmpty()){
+                writer.println(dotFileBuilder.poll());
+            }
             writer.close();
         }catch(IOException e){
             e.getMessage(); //tal vez hacer algo con la exception;

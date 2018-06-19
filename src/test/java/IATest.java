@@ -3,6 +3,10 @@ import Backend.GameManager;
 import Backend.IA;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -36,9 +40,9 @@ public class IATest {
         b.makeMove(b, 0,1, Board.DIRECTIONS.TOP, 1);
         b.makeMove(b,0,1, Board.DIRECTIONS.RIGHT, 1);
         b.makeMove(b, 1,1, Board.DIRECTIONS.BOTTOM,2);
-        b.asciiPrintBoard();
+        b.asciiPrintBoard(new StringBuffer());
         Board best = jarvis.depthMinimax();
-        best.asciiPrintBoard();
+        best.asciiPrintBoard(new StringBuffer());
     }
 
     @Test
@@ -48,9 +52,9 @@ public class IATest {
         b.makeMove(b, 0,0, Board.DIRECTIONS.TOP, 1);
         b.makeMove(b, 0,0, Board.DIRECTIONS.RIGHT, 1);
         b.makeMove(b, 0,0, Board.DIRECTIONS.LEFT, 1);
-        b.asciiPrintBoard();
+        b.asciiPrintBoard(new StringBuffer());
         Board best = jarvis.depthMinimax();
-        best.asciiPrintBoard();
+        best.asciiPrintBoard(new StringBuffer());
     }
 
     @Test
@@ -61,9 +65,9 @@ public class IATest {
         b.makeMove(b, 0,0, Board.DIRECTIONS.TOP, 1);
         b.makeMove(b, 0,0, Board.DIRECTIONS.RIGHT, 1);
         b.makeMove(b, 0,0, Board.DIRECTIONS.LEFT, 1);
-        b.asciiPrintBoard();
+        b.asciiPrintBoard(new StringBuffer());
         Board best = jarvis.depthMinimax();
-        best.asciiPrintBoard();
+        best.asciiPrintBoard(new StringBuffer());
     }
 
     //Time tests
@@ -82,9 +86,9 @@ public class IATest {
         b.makeMove(b, 0,1, Board.DIRECTIONS.TOP, 1);
         b.makeMove(b,0,1, Board.DIRECTIONS.RIGHT, 1);
         b.makeMove(b, 1,1, Board.DIRECTIONS.BOTTOM,2);
-        b.asciiPrintBoard();
+        b.asciiPrintBoard(new StringBuffer());
         Board best = jarvis.timeMinimax();
-        best.asciiPrintBoard();
+        best.asciiPrintBoard(new StringBuffer());
     }
 
     @Test
@@ -94,9 +98,9 @@ public class IATest {
         b.makeMove(b, 0,0, Board.DIRECTIONS.TOP, 1);
         b.makeMove(b, 0,0, Board.DIRECTIONS.RIGHT, 1);
         b.makeMove(b, 0,0, Board.DIRECTIONS.LEFT, 1);
-        b.asciiPrintBoard();
+        b.asciiPrintBoard(new StringBuffer());
         Board best = jarvis.timeMinimax();
-        best.asciiPrintBoard();
+        best.asciiPrintBoard(new StringBuffer());
     }
 
     /*@Test
@@ -150,7 +154,7 @@ public class IATest {
         b2.makeMove(b2, 0,0,Board.DIRECTIONS.TOP, 1);
         jarvis = new IA(b2, IA.Mode.DEPTH, 1, 0,2,1,false);
         Board solution = jarvis.miniMax();
-        solution.asciiPrintBoard();
+        solution.asciiPrintBoard(new StringBuffer());
     }
 
     @Test
@@ -158,7 +162,47 @@ public class IATest {
         gm.move(0,0,Board.DIRECTIONS.TOP);
         //gm.getBoard().asciiPrintBoard();
         gm.setBoard(jarvis.miniMax());
-        gm.getBoard().asciiPrintBoard();
+        gm.getBoard().asciiPrintBoard(new StringBuffer());
+    }
+
+    @Test
+    public void dotFileTest(){
+        Board b2 = new Board(2);
+        jarvis = new IA(gm.getBoard(), IA.Mode.DEPTH, 1, 0, 1,2, true);
+        b2.makeMove(b2, 0,0,Board.DIRECTIONS.TOP, 1);
+        b2.makeMove(b2, 0,0,Board.DIRECTIONS.RIGHT, 1);
+        b2.makeMove(b2, 0,0,Board.DIRECTIONS.LEFT, 1);
+        b2.makeMove(b2, 0,0,Board.DIRECTIONS.BOTTOM, 1);
+        b2.makeMove(b2, 0,1,Board.DIRECTIONS.TOP, 1);
+        b2.makeMove(b2, 0,1,Board.DIRECTIONS.RIGHT, 1);
+        b2.makeMove(b2, 0,1,Board.DIRECTIONS.LEFT, 1);
+        b2.makeMove(b2, 0,1,Board.DIRECTIONS.BOTTOM, 1);
+        jarvis.miniMax();
+        jarvis.saveDOTFile();
+    }
+
+    @Test
+    public void dotFileAUXTest(){
+        Board b2 = new Board(2);
+        b2.makeMove(b2, 0,0, Board.DIRECTIONS.TOP, 1);
+        // Create a stream to hold the output
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream ps = new PrintStream(baos);
+        // Save the old System.out
+
+
+        PrintStream old = System.out;
+        //change out
+        System.setOut(ps);
+        // Print some output: goes to your special stream
+        b2.asciiPrintBoard(new StringBuffer());
+
+
+        // Put things back
+        System.out.flush(); //discard
+        System.setOut(old);
+        //print
+        assertEquals(baos.toString(), baos.toString());
     }
 
 }
