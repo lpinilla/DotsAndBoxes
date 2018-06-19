@@ -29,8 +29,10 @@ public class GameUI2 extends  JPanel{
     public GameUI2(){ //se mira no se toca
         gm = new GameManager(boardSize-1, IA.Mode.DEPTH, 1,0,true, GameManager.GAME_MODE.HVSAI);
         backBoard = gm.getBoard();
+
+        //UI STUFF
         label = new JLabel();
-        label.setText("Player " + gm.whoIsActivePlayer());
+        label.setText(gm.whoIsActivePlayer());
         String[] aux = new String[boardSize -1];
         for (int i = 0; i < boardSize-1; i++) {
             aux[i] = Integer.toString(i);
@@ -97,38 +99,49 @@ public class GameUI2 extends  JPanel{
         boardUI.setPreferredSize(new Dimension(50,1100));
         infoContainer.add(boardUI, BorderLayout.PAGE_END);
 
+
         infoContainer.setBackground(Color.YELLOW); //testing purposes
+
+
+
+        //---------------------------------------------------------------BOTON PARA JUGAR
         playButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 //OBTENER DATOS
-                int x = xCoor.getSelectedIndex();
-                int y = yCoor.getSelectedIndex();
-                Board.DIRECTIONS direction = null;
-                switch (dir.getSelectedIndex()){
-                    case 0:
-                        direction = Board.DIRECTIONS.TOP;
-                        break;
-                    case 1:
-                        direction = Board.DIRECTIONS.RIGHT;
-                        break;
-                    case 2:
-                        direction = Board.DIRECTIONS.BOTTOM;
-                        break;
-                    case 3:
-                        direction = Board.DIRECTIONS.LEFT;
+                if(game_mode != GameManager.GAME_MODE.AIVSAI) {
+                    int x = xCoor.getSelectedIndex();
+                    int y = yCoor.getSelectedIndex();
+                    Board.DIRECTIONS direction = null;
+                    switch (dir.getSelectedIndex()) {
+                        case 0:
+                            direction = Board.DIRECTIONS.TOP;
+                            break;
+                        case 1:
+                            direction = Board.DIRECTIONS.RIGHT;
+                            break;
+                        case 2:
+                            direction = Board.DIRECTIONS.BOTTOM;
+                            break;
+                        case 3:
+                            direction = Board.DIRECTIONS.LEFT;
+                    }
+                    //JUGAR
+                    if(play(x, y, direction)) {
+                        //Label
+                        label.setText(gm.whoIsActivePlayer());
+                        label.repaint();
+                        gm.isAiPlaying = false;
+                        backBoard = gm.aiMove();
+                        //rePaintBoard();
+                    }
                 }
-                play(x,y,direction);
-                label.setText("Player " + gm.whoIsActivePlayer());
-                label.repaint();
-                backBoard = gm.aiMove();
-                rePaintBoard();
             }
         });
     }
 
     public static void main(String[] args){
-        JFrame frame = new JFrame("GameUI");
+        JFrame frame = new JFrame("Dots and Boxes");
         GameUI2 ui = new GameUI2();
         frame.getContentPane().add(ui);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -139,22 +152,25 @@ public class GameUI2 extends  JPanel{
         frame.setVisible(true);
         frame.add(ui.infoContainer, BorderLayout.NORTH);
         ui.infoContainer.repaint();
-        //wantToPlay();
+        wantToPlay();
     }
 
     public static void wantToPlay(){
         while(gm.gameStatus != GameManager.GAME_STATUS.OVER){
             //System.out.println("playing");
-            System.out.println(gm.playerTurn);
+            //System.out.println(gm.gameStatus);
             if(game_mode != GameManager.GAME_MODE.HVSH) {
-                if (gm.playerTurn) { //si es turno de humann
+                if (gm.playerTurn) { //si es turno de human
                     //wait for click
                     //no need to put anything
-                } else {
-                    gm.aiMove();
+                } else if(!gm.isAiPlaying){
+                    backBoard = gm.aiMove();
                     rePaintBoard();
                     //System.out.println("waiting..");
                 }
+            }
+            if(game_mode == GameManager.GAME_MODE.AIVSAI){
+                //ai1.move y ai2.move
             }
         }
         int winner = gm.whoWins();
@@ -165,13 +181,18 @@ public class GameUI2 extends  JPanel{
         }
     }
 
-    public static void play(int x, int y, Board.DIRECTIONS direction){
+    public static boolean play(int x, int y, Board.DIRECTIONS direction){
         if(gm.gameStatus == GameManager.GAME_STATUS.PLAYING){
-            gm.move(x,y,direction);
+            if(!gm.move(x,y,direction)){
+                JOptionPane.showMessageDialog(null, "Already an edge");
+                return false;
+            }
             rePaintBoard();
+            return true;
         }else {
             JOptionPane.showMessageDialog(null, "Player 1  Wins!"); //TODO change
         }
+        return true;
     }
 
     private static void rePaintBoard(){

@@ -4,14 +4,16 @@ public class GameManager {
 
     private class Player{
         private int color, score;
+        private String name;
 
-        Player(int color){
+        Player(int color, String name){
             this.color = color;
             this.score = 0;
+            this.name = name;
         }
     }
 
-    public enum GAME_STATUS { PLAYING, OVER}
+    public enum GAME_STATUS { PLAYING, THINKING, OVER}
     public enum GAME_MODE { HVSH, IAVSH, HVSAI, AIVSAI};
 
     private Player activePlayer;
@@ -19,34 +21,37 @@ public class GameManager {
     private Board b;
     public GAME_STATUS gameStatus;
     private IA ia;
-    public boolean playerTurn;
+    public boolean playerTurn, isAiPlaying;
 
     public GameManager(int size, GAME_MODE game_mode){ //no IA
         b = new Board(size);
         players = new Player[2];
-        players[0] = new Player(1);
-        players[1] = new Player(2);
+        players[0] = new Player(1, "Player1");
+        players[1] = new Player(2, "Player2");
         activePlayer = players[0]; //esto puede variar
         gameStatus = GAME_STATUS.PLAYING;
+        isAiPlaying = false;
     }
 
     public GameManager(int size, IA.Mode iaMode, int maxDepth,
                        long totalTime, boolean prune, GAME_MODE game_mode){
         b = new Board(size);
-        players = new Player[] {new Player(1), new Player(2)};
+        players = new Player[] {new Player(1,"Player1"), new Player(2, "Player2")}; //cambiar
         if(game_mode == GAME_MODE.HVSH || game_mode == GAME_MODE.HVSAI) {
             activePlayer = players[0]; //esto puede variar
             playerTurn = true;
         }else{
             activePlayer = players[1];
+            isAiPlaying = true;
             playerTurn = false;
         }
         gameStatus = GAME_STATUS.PLAYING;
         ia = new IA(getBoard() ,iaMode,maxDepth,totalTime,2,1,prune);
     }
 
-    public void move(int x, int y, Board.DIRECTIONS dir){
+    public boolean move(int x, int y, Board.DIRECTIONS dir){
         int moveVal = b.makeMove(b, x,y, dir, activePlayer.color);
+        if(moveVal == -1) return false;
         if( moveVal == 1){
             activePlayer.score++;
         }else if(moveVal == 0){
@@ -54,6 +59,11 @@ public class GameManager {
         }
         b.asciiPrintBoard(); //temporary
         checkIfIsGameOver();
+        return true;
+    }
+
+    public boolean isGameOver(){
+        return b.hasRemainingPlays(b);
     }
 
     private void checkIfIsGameOver(){
@@ -94,16 +104,17 @@ public class GameManager {
         return this.b;
     }
 
-    public int whoIsActivePlayer(){
-        if(activePlayer == players[0]){
-            return 1;
-        }
-        return 2;
+    public String whoIsActivePlayer(){
+        return this.activePlayer.name;
     }
 
     public Board aiMove(){
+        isAiPlaying = true;
         System.out.println("entering IA");
         this.b = ia.miniMax();
+        isAiPlaying = false;
+        changeTurn();
+        checkIfIsGameOver();
         return b;
     }
 
