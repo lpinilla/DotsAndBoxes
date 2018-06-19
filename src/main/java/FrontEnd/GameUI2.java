@@ -21,13 +21,14 @@ public class GameUI2 extends  JPanel{
     static int pointSpacing = 50;
     static  GameManager gm;
     static Board backBoard;
-    static GameManager.GAME_MODE game_mode = GameManager.GAME_MODE.HVSAI;
+    static GameManager.GAME_MODE game_mode = GameManager.GAME_MODE.HVSH;
     static JPanel infoContainer;
 
 
 
     public GameUI2(){ //se mira no se toca
-        gm = new GameManager(boardSize-1, IA.Mode.DEPTH, 1,0,true, GameManager.GAME_MODE.HVSAI);
+        //gm = new GameManager(boardSize-1, IA.Mode.DEPTH, 1,0,true, game_mode);
+        gm = new GameManager(boardSize -1, game_mode);
         backBoard = gm.getBoard();
 
         //UI STUFF
@@ -44,7 +45,7 @@ public class GameUI2 extends  JPanel{
         playButton = new JButton();
         populateComboBox(xCoor, aux);
         populateComboBox(yCoor, aux);
-        populateComboBox(dir, new String[] {"TOP", "RIGHT", "DOWN", "LEFT"});
+        populateComboBox(dir, new String[] {"TOP", "RIGHT", "BOTTOM", "LEFT"});
         undoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -129,11 +130,14 @@ public class GameUI2 extends  JPanel{
                     //JUGAR
                     if(play(x, y, direction)) {
                         //Label
-                        label.setText(gm.whoIsActivePlayer());
-                        label.repaint();
+                        if(game_mode == GameManager.GAME_MODE.HVSH){
+                            showLabel();
+                        }
                         gm.isAiPlaying = false;
-                        //backBoard = gm.aiMove();
                         //rePaintBoard();
+                        if(gm.gameStatus == GameManager.GAME_STATUS.OVER) {
+                            showWinner();
+                        }
                     }
                 }
             }
@@ -152,7 +156,9 @@ public class GameUI2 extends  JPanel{
         frame.setVisible(true);
         frame.add(infoContainer, BorderLayout.NORTH);
         infoContainer.repaint();
-        wantToPlay();
+        //if(game_mode != GameManager.GAME_MODE.HVSH) {
+            wantToPlay();
+        //}
     }
 
     public static void wantToPlay(){
@@ -160,11 +166,13 @@ public class GameUI2 extends  JPanel{
             //System.out.println("playing");
             //System.out.println(gm.gameStatus);
             if(game_mode == GameManager.GAME_MODE.HVSAI ||
-                    game_mode == GameManager.GAME_MODE.IAVSH) {
+                    game_mode == GameManager.GAME_MODE.AIVSH) {
+                showLabel();
                 if (gm.playerTurn) { //si es turno de human
                     //wait for click
                     while(gm.playerTurn){ //NECESITA HABER ALGO DENTRO DEL LOOP
-                        System.out.println("waiting for click");
+                        System.out.println("waiting for click"); //NO TOCAR, NO ES PARA DEBUGGEAR
+
                     }
                 } else if(!gm.isAiPlaying){
                     backBoard = gm.aiMove();
@@ -175,36 +183,16 @@ public class GameUI2 extends  JPanel{
                 //ai1.move y ai2.move
             }
         }
-        int winner;
-        if(game_mode == GameManager.GAME_MODE.HVSH) {
-            winner = gm.whoWins();
-        }else{
-            winner = gm.whoWins2();
-        }
-        if (winner != 0) {
-            JOptionPane.showMessageDialog(null, "Player " + winner + " Wins!");
-        } else {
-            JOptionPane.showMessageDialog(null, "It's a Tie!");
-        }
+        showWinner();
     }
 
-    public static boolean play(int x, int y, Board.DIRECTIONS direction){
-        //if(gm.gameStatus == GameManager.GAME_STATUS.PLAYING){
-            if(!gm.move(x,y,direction)){
-                JOptionPane.showMessageDialog(null, "Already an edge");
-                return false;
-            }
-            rePaintBoard();
-            return true;
-        /*}else {
-            int winner = gm.whoWins2();
-            if(winner != 0) {
-                JOptionPane.showMessageDialog(null, "Player " + winner + " Wins!");
-            }else{
-                JOptionPane.showMessageDialog(null, "It's a tie");
-            }
+    public static boolean play(int x, int y, Board.DIRECTIONS direction) {
+        if (!gm.move(x, y, direction)) {
+            JOptionPane.showMessageDialog(null, "Already an edge");
+            return false;
         }
-        return true;*/
+        rePaintBoard();
+        return true;
     }
 
     private static void rePaintBoard(){
@@ -311,5 +299,24 @@ public class GameUI2 extends  JPanel{
                 }
             }
         }
+    }
+
+    private static void showWinner(){
+        int winner;
+        if(game_mode == GameManager.GAME_MODE.HVSH) {
+            winner = gm.whoWins();
+        }else{
+            winner = gm.whoWins2();
+        }
+        if (winner != 0) {
+            JOptionPane.showMessageDialog(null, "Player " + winner + " Wins!");
+        } else {
+            JOptionPane.showMessageDialog(null, "It's a Tie!");
+        }
+    }
+
+    private static void showLabel(){
+        label.setText(gm.whoIsActivePlayer());
+        label.repaint();
     }
 }

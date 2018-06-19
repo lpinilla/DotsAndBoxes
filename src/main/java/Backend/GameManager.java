@@ -14,7 +14,7 @@ public class GameManager {
     }
 
     public enum GAME_STATUS { PLAYING, THINKING, OVER}
-    public enum GAME_MODE { HVSH, IAVSH, HVSAI, AIVSAI};
+    public enum GAME_MODE { HVSH, AIVSH, HVSAI, AIVSAI};
 
     private Player activePlayer;
     private Player[] players; //siempre el humano va a ser el 0
@@ -36,14 +36,16 @@ public class GameManager {
     public GameManager(int size, IA.Mode iaMode, int maxDepth,
                        long totalTime, boolean prune, GAME_MODE game_mode){
         b = new Board(size);
-        players = new Player[] {new Player(1,"Player1"), new Player(2, "Player2")}; //cambiar
+        players = new Player[] {new Player(1,"Player1"), new Player(2, "Player2")};
         if(game_mode == GAME_MODE.HVSH || game_mode == GAME_MODE.HVSAI) {
             activePlayer = players[0]; //esto puede variar
             playerTurn = true;
-        }else if (game_mode == GAME_MODE.IAVSH){
+            players[1].name = "IA";
+        }else if (game_mode == GAME_MODE.AIVSH){
             activePlayer = players[1];
-            isAiPlaying = true;
+            isAiPlaying = false;
             playerTurn = false;
+            players[1].name = "IA";
         }
         gameStatus = GAME_STATUS.PLAYING;
         ia = new IA(getBoard() ,iaMode,maxDepth,totalTime,2,1,prune); //hardcodeo el color
