@@ -105,7 +105,7 @@ public class BoardTest {
         b2.makeMove(b2, 0,0, Board.DIRECTIONS.RIGHT, 1);
 
         b2.makeMove(b2, 1,0,Board.DIRECTIONS.TOP,1);
-        b2.asciiPrintBoard();
+        b2.asciiPrintBoard(new StringBuffer());
     }
 
     @Test
@@ -230,12 +230,12 @@ public class BoardTest {
         b2.makeMove(b2,0,0, Board.DIRECTIONS.TOP, 1);
         b2.makeMove(b2,0,0,Board.DIRECTIONS.LEFT, 1);
         b2.makeMove(b2,0,0,Board.DIRECTIONS.RIGHT, 1);
-        Set<Board> moves = b2.getPossibleMoves(b2, 3);
+        /*Set<Board> moves = b2.getPossibleMoves(b2, 3);
         for(Board move : moves){
             System.out.println(move.hashCode());
-            move.asciiPrintBoard();
+            move.asciiPrintBoard(new String());
 
-        }
+        }*/
         assertEquals(16,b2.getPossibleMoves(b2, 3).size());
     }
 
@@ -286,21 +286,21 @@ public class BoardTest {
     public void loadTest1(){
         Board b1 = Board.loadGame("src/test/java/Test");
         System.out.println("Load1");
-        b1.asciiPrintBoard();
+        b1.asciiPrintBoard(new StringBuffer());
     }
 
     @Test
     public void loadTest2(){
         Board b2 = Board.loadGame("src/test/java/Test2");
         System.out.println("Load2");
-        b2.asciiPrintBoard();
+        b2.asciiPrintBoard(new StringBuffer());
     }
 
     @Test
     public void loadTest3(){
         Board b3 = Board.loadGame("src/test/java/Test3");
         System.out.println("Load2");
-        b3.asciiPrintBoard();
+        b3.asciiPrintBoard(new StringBuffer());
     }
 
 

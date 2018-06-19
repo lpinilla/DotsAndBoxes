@@ -255,7 +255,7 @@ public class Board {
     private void getPossibleMovesRec(Board b, Set<Board> set, int color){
         if(!hasRemainingPlays(b)){
             set.add(b);
-            b.asciiPrintBoard();
+            //b.asciiPrintBoard();
             return;
         }
         Board aux;
@@ -277,7 +277,7 @@ public class Board {
         }
     }
 
-    public void asciiPrintBoard () { //testing purposes
+    public void asciiPrintBoard (StringBuffer dotFileConstructor) { //testing purposes
         String[] aux = new String[3];
         for (int i = 0; i < aux.length; i++) {
             aux[i] = "";
@@ -287,39 +287,42 @@ public class Board {
                 //Top layer
                 for (int k = 0; k < 3; k++) {
                     if (matrix[i][j].top) {
-                        aux[0] += "1 ";
+                        aux[0] += "1";
                     } else {
-                        aux[0] += "0 ";
+                        aux[0] += "0";
                     }
                 }
                 aux[0] += " ";
                 //Middle layer
                 if (matrix[i][j].left) {
-                    aux[1] += "1 ";
+                    aux[1] += "1";
                 } else {
-                    aux[1] += "0 ";
+                    aux[1] += "0";
                 }
-                aux[1] += matrix[i][j].color + " ";
+                aux[1] += matrix[i][j].color + "";
                 if (matrix[i][j].right) {
-                    aux[1] += "1 ";
+                    aux[1] += "1";
                 } else {
-                    aux[1] += "0 ";
+                    aux[1] += "0";
                 }
                 aux[1] += " ";
                 //Bottom layer
                 for (int k = 0; k < 3; k++) {
                     if (matrix[i][j].bottom) {
-                        aux[2] += "1 ";
+                        aux[2] += "1";
                     } else {
-                        aux[2] += "0 ";
+                        aux[2] += "0";
                     }
                 }
                 aux[2] += " ";
             }
             for (int t = 0; t < aux.length; t++) {
                 System.out.println(aux[t]);
+                dotFileConstructor.append(aux[t]);
+                dotFileConstructor.append("\\n");
                 aux[t] = "";
             }
+            dotFileConstructor.append("\\n");
             System.out.println();
 
         }
