@@ -20,8 +20,8 @@ public class GameManager {
     private Player[] players; //siempre el humano va a ser el 0 (a menos que sea IA vs IA)
     private Board b;
     public GAME_STATUS gameStatus;
-    private IA ia1;
-    public boolean playerTurn, isAiPlaying, isAi2Playing;
+    public IA ia;
+    public boolean playerTurn, isAiPlaying;
 
     public GameManager(int size, GAME_MODE game_mode){ //no IA
         b = new Board(size);
@@ -30,8 +30,8 @@ public class GameManager {
         players[1] = new Player(2, "Player2");
         activePlayer = players[0]; //esto puede variar
         gameStatus = GAME_STATUS.PLAYING;
-        isAiPlaying = isAi2Playing = false;
-        ia1 = null;
+        isAiPlaying  = false;
+        ia = null;
     }
 
     public GameManager(int size, IA.Mode iaMode, int maxDepth,
@@ -46,15 +46,15 @@ public class GameManager {
             activePlayer = players[0];
             playerTurn = true;
             players[1].name = "IA";
-            ia1 = new IA(getBoard() ,iaMode,maxDepth,totalTime,2,1,prune);
+            ia = new IA(getBoard() ,iaMode,maxDepth,totalTime,2,1,prune);
         }else if (game_mode == GAME_MODE.AIVSH){
             activePlayer = players[1];
             isAiPlaying = false;
             playerTurn = false;
             players[1].name = "IA";
-            ia1 = new IA(getBoard() ,iaMode,maxDepth,totalTime,2,1,prune);
+            ia = new IA(getBoard() ,iaMode,maxDepth,totalTime,2,1,prune);
         }else { //IA vs IA
-            ia1 = new IA(getBoard() ,iaMode,maxDepth,totalTime,2,1,prune);
+            ia = new IA(getBoard() ,iaMode,maxDepth,totalTime,2,1,prune);
             isAiPlaying = false;
         }
         gameStatus = GAME_STATUS.PLAYING;
@@ -131,7 +131,7 @@ public class GameManager {
 
     public Board aiMove(){
         isAiPlaying = true;
-        this.b = ia1.miniMax();
+        this.b = ia.miniMax();
         b.asciiPrintBoard(new StringBuffer());
         isAiPlaying = false;
         changeTurn();
@@ -141,7 +141,7 @@ public class GameManager {
 
     public Board ai2Move(){
         Board b = aiMove();
-        ia1.swapColors();
+        ia.swapColors();
         return b;
     }
 

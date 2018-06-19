@@ -19,9 +19,10 @@ public class GameUI2 extends  JPanel{
     static int boardSize = 3;
     static int[] startingPos = new int[] { 20,20};
     static int pointSpacing = 50;
+    static int nOfSave = 0;
     static  GameManager gm;
     static Board backBoard;
-    static GameManager.GAME_MODE game_mode = GameManager.GAME_MODE.AIVSAI;
+    static GameManager.GAME_MODE game_mode = GameManager.GAME_MODE.HVSAI;
     static JPanel infoContainer;
 
 
@@ -63,10 +64,38 @@ public class GameUI2 extends  JPanel{
         });
         infoContainer = new JPanel();
         infoContainer.setLayout(new BorderLayout());
-        //label
-        infoContainer.add(label, BorderLayout.PAGE_START);
+        //label, saveGame and DOT File
+        JPanel firstPanel = new JPanel();
+        firstPanel.add(label, BorderLayout.LINE_START);
+        JButton saveGame = new JButton();
+        JButton saveDot = new JButton();
+        saveGame.setMinimumSize(new Dimension(150,20));
+        saveGame.setPreferredSize(new Dimension(150,20));
+        saveGame.setText("Save Game");
+        //saveGame.repaint();
+        saveDot.setMinimumSize(new Dimension(150,20));
+        saveDot.setPreferredSize(new Dimension(150,20));
+        saveDot.setText("Save Dot File");
+        //saveGame.repaint();
+        firstPanel.add(saveGame, BorderLayout.CENTER);
+        firstPanel.add(saveDot, BorderLayout.PAGE_END);
+        infoContainer.add(firstPanel, BorderLayout.PAGE_START);
         label.setHorizontalAlignment(0);
         label.repaint();
+
+        saveGame.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                backBoard.saveGame("Save" + Integer.toString(nOfSave++));
+            }
+        });
+
+        saveDot.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                gm.ia.saveDOTFile();
+            }
+        });
 
         JPanel auxPanel1 = new JPanel();
         auxPanel1.setLayout(new BorderLayout());
