@@ -132,7 +132,7 @@ public class GameUI2 extends  JPanel{
                         label.setText(gm.whoIsActivePlayer());
                         label.repaint();
                         gm.isAiPlaying = false;
-                        backBoard = gm.aiMove();
+                        //backBoard = gm.aiMove();
                         //rePaintBoard();
                     }
                 }
@@ -150,8 +150,8 @@ public class GameUI2 extends  JPanel{
         frame.setLocation(650,100);
         //frame.pack(); //me cambia to-do
         frame.setVisible(true);
-        frame.add(ui.infoContainer, BorderLayout.NORTH);
-        ui.infoContainer.repaint();
+        frame.add(infoContainer, BorderLayout.NORTH);
+        infoContainer.repaint();
         wantToPlay();
     }
 
@@ -159,21 +159,28 @@ public class GameUI2 extends  JPanel{
         while(gm.gameStatus != GameManager.GAME_STATUS.OVER){
             //System.out.println("playing");
             //System.out.println(gm.gameStatus);
-            if(game_mode != GameManager.GAME_MODE.HVSH) {
+            if(game_mode == GameManager.GAME_MODE.HVSAI ||
+                    game_mode == GameManager.GAME_MODE.IAVSH) {
                 if (gm.playerTurn) { //si es turno de human
                     //wait for click
-                    //no need to put anything
+                    while(gm.playerTurn){ //NECESITA HABER ALGO DENTRO DEL LOOP
+                        System.out.println("waiting for click");
+                    }
                 } else if(!gm.isAiPlaying){
                     backBoard = gm.aiMove();
                     rePaintBoard();
-                    //System.out.println("waiting..");
                 }
             }
             if(game_mode == GameManager.GAME_MODE.AIVSAI){
                 //ai1.move y ai2.move
             }
         }
-        int winner = gm.whoWins();
+        int winner;
+        if(game_mode == GameManager.GAME_MODE.HVSH) {
+            winner = gm.whoWins();
+        }else{
+            winner = gm.whoWins2();
+        }
         if (winner != 0) {
             JOptionPane.showMessageDialog(null, "Player " + winner + " Wins!");
         } else {
@@ -182,17 +189,22 @@ public class GameUI2 extends  JPanel{
     }
 
     public static boolean play(int x, int y, Board.DIRECTIONS direction){
-        if(gm.gameStatus == GameManager.GAME_STATUS.PLAYING){
+        //if(gm.gameStatus == GameManager.GAME_STATUS.PLAYING){
             if(!gm.move(x,y,direction)){
                 JOptionPane.showMessageDialog(null, "Already an edge");
                 return false;
             }
             rePaintBoard();
             return true;
-        }else {
-            JOptionPane.showMessageDialog(null, "Player 1  Wins!"); //TODO change
+        /*}else {
+            int winner = gm.whoWins2();
+            if(winner != 0) {
+                JOptionPane.showMessageDialog(null, "Player " + winner + " Wins!");
+            }else{
+                JOptionPane.showMessageDialog(null, "It's a tie");
+            }
         }
-        return true;
+        return true;*/
     }
 
     private static void rePaintBoard(){

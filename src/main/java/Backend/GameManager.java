@@ -40,13 +40,13 @@ public class GameManager {
         if(game_mode == GAME_MODE.HVSH || game_mode == GAME_MODE.HVSAI) {
             activePlayer = players[0]; //esto puede variar
             playerTurn = true;
-        }else{
+        }else if (game_mode == GAME_MODE.IAVSH){
             activePlayer = players[1];
             isAiPlaying = true;
             playerTurn = false;
         }
         gameStatus = GAME_STATUS.PLAYING;
-        ia = new IA(getBoard() ,iaMode,maxDepth,totalTime,2,1,prune);
+        ia = new IA(getBoard() ,iaMode,maxDepth,totalTime,2,1,prune); //hardcodeo el color
     }
 
     public boolean move(int x, int y, Board.DIRECTIONS dir){
@@ -69,12 +69,7 @@ public class GameManager {
     private void checkIfIsGameOver(){
         if(!b.hasRemainingPlays(b)){
             gameStatus = GAME_STATUS.OVER;
-            gameOver();
         }
-    }
-
-    public void gameOver(){
-        //do something
     }
 
     public int whoWins(){
@@ -86,8 +81,25 @@ public class GameManager {
         return 0;
     }
 
-    public Player getCurrentPlayer(){
-        return activePlayer;
+    public int whoWins2(){ //for IA methods
+        int player1 = 0, player2 = 0;
+        for (int i = 0; i < b.size; i++) {
+            for (int j = 0; j < b.size; j++) {
+                if(b.getBoxColor(i,j) == 1){
+                    player1++;
+                }else{
+                    player2++;
+                }
+            }
+        }
+        System.out.println("player1 score: "+ player1);
+        System.out.println("player2 score: "+ player2);
+        if(player1 > player2){
+            return 1;
+        }else if(player2 > player1){
+            return 2;
+        }
+        return 0;
     }
 
     public void changeTurn(){
@@ -112,6 +124,7 @@ public class GameManager {
         isAiPlaying = true;
         System.out.println("entering IA");
         this.b = ia.miniMax();
+        b.asciiPrintBoard();
         isAiPlaying = false;
         changeTurn();
         checkIfIsGameOver();
