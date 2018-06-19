@@ -17,11 +17,11 @@ public class GameManager {
     public enum GAME_MODE { HVSH, AIVSH, HVSAI, AIVSAI};
 
     private Player activePlayer;
-    private Player[] players; //siempre el humano va a ser el 0
+    private Player[] players; //siempre el humano va a ser el 0 (a menos que sea IA vs IA)
     private Board b;
     public GAME_STATUS gameStatus;
-    private IA ia;
-    public boolean playerTurn, isAiPlaying;
+    private IA ia1;
+    public boolean playerTurn, isAiPlaying, isAi2Playing;
 
     public GameManager(int size, GAME_MODE game_mode){ //no IA
         b = new Board(size);
@@ -30,25 +30,35 @@ public class GameManager {
         players[1] = new Player(2, "Player2");
         activePlayer = players[0]; //esto puede variar
         gameStatus = GAME_STATUS.PLAYING;
-        isAiPlaying = false;
+        isAiPlaying = isAi2Playing = false;
+        ia1 = null;
     }
 
     public GameManager(int size, IA.Mode iaMode, int maxDepth,
                        long totalTime, boolean prune, GAME_MODE game_mode){
         b = new Board(size);
         players = new Player[] {new Player(1,"Player1"), new Player(2, "Player2")};
-        if(game_mode == GAME_MODE.HVSH || game_mode == GAME_MODE.HVSAI) {
-            activePlayer = players[0]; //esto puede variar
+        if(game_mode == GAME_MODE.HVSH){
+            activePlayer = players[0];
+            playerTurn = true;
+        }
+        if(game_mode == GAME_MODE.HVSAI) {
+            activePlayer = players[0];
             playerTurn = true;
             players[1].name = "IA";
+            ia1 = new IA(getBoard() ,iaMode,maxDepth,totalTime,2,1,prune);
         }else if (game_mode == GAME_MODE.AIVSH){
             activePlayer = players[1];
             isAiPlaying = false;
             playerTurn = false;
             players[1].name = "IA";
+            ia1 = new IA(getBoard() ,iaMode,maxDepth,totalTime,2,1,prune);
+        }else { //IA vs IA
+            ia1 = new IA(getBoard() ,iaMode,maxDepth,totalTime,2,1,prune);
+            isAiPlaying = false;
         }
         gameStatus = GAME_STATUS.PLAYING;
-        ia = new IA(getBoard() ,iaMode,maxDepth,totalTime,2,1,prune); //hardcodeo el color
+
     }
 
     public boolean move(int x, int y, Board.DIRECTIONS dir){
@@ -59,14 +69,11 @@ public class GameManager {
         }else if(moveVal == 0){
             changeTurn();
         }
-        b.asciiPrintBoard(); //temporary
+        //b.asciiPrintBoard(); //temporary
         checkIfIsGameOver();
         return true;
     }
 
-    public boolean isGameOver(){
-        return b.hasRemainingPlays(b);
-    }
 
     private void checkIfIsGameOver(){
         if(!b.hasRemainingPlays(b)){
@@ -124,12 +131,17 @@ public class GameManager {
 
     public Board aiMove(){
         isAiPlaying = true;
-        System.out.println("entering IA");
-        this.b = ia.miniMax();
+        this.b = ia1.miniMax();
         b.asciiPrintBoard();
         isAiPlaying = false;
         changeTurn();
         checkIfIsGameOver();
+        return b;
+    }
+
+    public Board ai2Move(){
+        Board b = aiMove();
+        ia1.swapColors();
         return b;
     }
 

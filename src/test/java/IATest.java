@@ -99,7 +99,7 @@ public class IATest {
         best.asciiPrintBoard();
     }
 
-    @Test
+    /*@Test
     public void biggestChainEvaluatorTest(){
         Board b = new Board(5);
         jarvis = new IA(b, IA.Mode.DEPTH, 3, 1,1,2, true);
@@ -142,7 +142,7 @@ public class IATest {
         //b.asciiPrintBoard();
         Board best = jarvis.depthMinimax();
         best.asciiPrintBoard();
-    }
+    }*/
 
     @Test
     public void firstChoiceTest(){

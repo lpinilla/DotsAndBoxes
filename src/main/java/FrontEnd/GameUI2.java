@@ -21,19 +21,24 @@ public class GameUI2 extends  JPanel{
     static int pointSpacing = 50;
     static  GameManager gm;
     static Board backBoard;
-    static GameManager.GAME_MODE game_mode = GameManager.GAME_MODE.HVSH;
+    static GameManager.GAME_MODE game_mode = GameManager.GAME_MODE.AIVSAI;
     static JPanel infoContainer;
 
 
 
     public GameUI2(){ //se mira no se toca
-        //gm = new GameManager(boardSize-1, IA.Mode.DEPTH, 1,0,true, game_mode);
-        gm = new GameManager(boardSize -1, game_mode);
+        if(game_mode == GameManager.GAME_MODE.HVSH){
+            gm = new GameManager(boardSize -1, game_mode);
+        }else {
+            gm = new GameManager(boardSize - 1, IA.Mode.DEPTH, 1, 0, true, game_mode);
+        }
         backBoard = gm.getBoard();
 
         //UI STUFF
         label = new JLabel();
-        label.setText(gm.whoIsActivePlayer());
+        if(game_mode != GameManager.GAME_MODE.AIVSAI) {
+            label.setText(gm.whoIsActivePlayer());
+        }
         String[] aux = new String[boardSize -1];
         for (int i = 0; i < boardSize-1; i++) {
             aux[i] = Integer.toString(i);
@@ -156,9 +161,7 @@ public class GameUI2 extends  JPanel{
         frame.setVisible(true);
         frame.add(infoContainer, BorderLayout.NORTH);
         infoContainer.repaint();
-        //if(game_mode != GameManager.GAME_MODE.HVSH) {
-            wantToPlay();
-        //}
+        wantToPlay();
     }
 
     public static void wantToPlay(){
@@ -180,7 +183,13 @@ public class GameUI2 extends  JPanel{
                 }
             }
             if(game_mode == GameManager.GAME_MODE.AIVSAI){
-                //ai1.move y ai2.move
+                /*if(!gm.isAiPlaying){
+                    backBoard = gm.aiMove();
+                }else{
+                    backBoard = gm.ai2Move();
+                }*/
+                backBoard = gm.ai2Move();
+                rePaintBoard();
             }
         }
         showWinner();

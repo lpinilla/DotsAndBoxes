@@ -48,6 +48,12 @@ public class IA {
         return sol;
     }
 
+    public void swapColors(){
+        int aux = color;
+        color = otherPlayerColor;
+        otherPlayerColor = aux;
+    }
+
 
     //Evaluates the board
 
