@@ -1,5 +1,5 @@
 group 'com.lpinilla'
-version '1.0-SNAPSHOT'
+version '1.0'
 
 apply plugin: 'java'
 
@@ -7,6 +7,7 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
+    maven { url 'http://repo1.maven.org/maven2' }
 }
 
 dependencies {

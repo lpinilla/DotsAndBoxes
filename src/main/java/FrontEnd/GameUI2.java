@@ -16,22 +16,25 @@ public class GameUI2 extends  JPanel{
     static private JLabel label;
     private JPanel Drawable;
 
-    static int boardSize = 3;
+
     static int[] startingPos = new int[] { 20,20};
     static int pointSpacing = 50;
     static int nOfSave = 0;
+    static int boardSize;
     static  GameManager gm;
     static Board backBoard;
-    static GameManager.GAME_MODE game_mode = GameManager.GAME_MODE.HVSAI;
+    static GameManager.GAME_MODE game_mode;
     static JPanel infoContainer;
 
 
-
-    public GameUI2(){ //se mira no se toca
+    //GameUI2(new Integer(args[0]), game_mode, iamode, maxDepth, maxTime, pruneActive);
+    public GameUI2(int size, GameManager.GAME_MODE game_mode, IA.Mode mode, int maxDepth, long maxtime,
+                   boolean isPruneActive){ //se mira no se toca
+        boardSize = size;
         if(game_mode == GameManager.GAME_MODE.HVSH){
-            gm = new GameManager(boardSize -1, game_mode);
+            gm = new GameManager(size -1, game_mode);
         }else {
-            gm = new GameManager(boardSize - 1, IA.Mode.DEPTH, 1, 0, true, game_mode);
+            gm = new GameManager(size - 1, mode, maxDepth, maxtime, isPruneActive, game_mode);
         }
         backBoard = gm.getBoard();
 
@@ -40,8 +43,8 @@ public class GameUI2 extends  JPanel{
         if(game_mode != GameManager.GAME_MODE.AIVSAI) {
             label.setText(gm.whoIsActivePlayer());
         }
-        String[] aux = new String[boardSize -1];
-        for (int i = 0; i < boardSize-1; i++) {
+        String[] aux = new String[size -1];
+        for (int i = 0; i < size-1; i++) {
             aux[i] = Integer.toString(i);
         }
         xCoor = new JComboBox();
@@ -178,9 +181,43 @@ public class GameUI2 extends  JPanel{
         });
     }
 
-    public static void main(String[] args){
+    //argumentos: size ; gameMode ; aiMode; depth/time, prune, load
+    public static void main(String[] args){ //length = 6
+        switch (args[1]){
+            case "0":
+                game_mode = GameManager.GAME_MODE.HVSH;
+                break;
+            case "1":
+                game_mode = GameManager.GAME_MODE.AIVSH;
+                break;
+            case "2":
+                game_mode = GameManager.GAME_MODE.HVSAI;
+                break;
+            case "3":
+                game_mode = GameManager.GAME_MODE.AIVSAI;
+                break;
+        }
+        IA.Mode iamode = null;
+        long maxTime = 0;
+        int maxDepth = 0;
+        switch (args[2]){
+            case"time":
+                iamode = IA.Mode.TIME;
+                maxTime = new Long(args[3]);
+                break;
+            case "depth":
+                iamode = IA.Mode.DEPTH;
+                maxDepth = new Integer(args[3]);
+                break;
+        }
+        boolean pruneActive = false;
+        if(args[4].equals("on")){
+            pruneActive = true;
+        }else if(args[4].equals("off")){
+            pruneActive = false;
+        }
         JFrame frame = new JFrame("Dots and Boxes");
-        GameUI2 ui = new GameUI2();
+        GameUI2 ui = new GameUI2(new Integer(args[0]), game_mode, iamode, maxDepth, maxTime, pruneActive);
         frame.getContentPane().add(ui);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setMinimumSize(new Dimension(820,900));
@@ -212,11 +249,6 @@ public class GameUI2 extends  JPanel{
                 }
             }
             if(game_mode == GameManager.GAME_MODE.AIVSAI){
-                /*if(!gm.isAiPlaying){
-                    backBoard = gm.aiMove();
-                }else{
-                    backBoard = gm.ai2Move();
-                }*/
                 backBoard = gm.ai2Move();
                 rePaintBoard();
             }
