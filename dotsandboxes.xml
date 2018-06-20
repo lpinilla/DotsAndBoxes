@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="dotsandboxes" default="all">
+  
+  
+  <property file="dotsandboxes.properties"/>
+  <!-- Uncomment the following property if no tests compilation is needed -->
+  <!-- 
+  <property name="skip.tests" value="true"/>
+   -->
+  
+  <!-- Compiler options -->
+  
+  <property name="compiler.debug" value="on"/>
+  <property name="compiler.generate.no.warnings" value="off"/>
+  <property name="compiler.args" value=""/>
+  <property name="compiler.max.memory" value="700m"/>
+  <patternset id="ignored.files">
+    <exclude name="**/*.hprof/**"/>
+    <exclude name="**/*.pyc/**"/>
+    <exclude name="**/*.pyo/**"/>
+    <exclude name="**/*.rbc/**"/>
+    <exclude name="**/*.yarb/**"/>
+    <exclude name="**/*~/**"/>
+    <exclude name="**/.DS_Store/**"/>
+    <exclude name="**/.git/**"/>
+    <exclude name="**/.hg/**"/>
+    <exclude name="**/.svn/**"/>
+    <exclude name="**/CVS/**"/>
+    <exclude name="**/__pycache__/**"/>
+    <exclude name="**/_svn/**"/>
+    <exclude name="**/vssver.scc/**"/>
+    <exclude name="**/vssver2.scc/**"/>
+  </patternset>
+  <patternset id="library.patterns">
+    <include name="*.war"/>
+    <include name="*.swc"/>
+    <include name="*.zip"/>
+    <include name="*.egg"/>
+    <include name="*.ane"/>
+    <include name="*.jar"/>
+    <include name="*.ear"/>
+  </patternset>
+  <patternset id="compiler.resources">
+    <exclude name="**/?*.java"/>
+    <exclude name="**/?*.form"/>
+    <exclude name="**/?*.class"/>
+    <exclude name="**/?*.groovy"/>
+    <exclude name="**/?*.scala"/>
+    <exclude name="**/?*.flex"/>
+    <exclude name="**/?*.kt"/>
+    <exclude name="**/?*.clj"/>
+    <exclude name="**/?*.aj"/>
+  </patternset>
+  
+  <!-- JDK definitions -->
+  
+  <property name="jdk.bin.1.8" value="${jdk.home.1.8}/bin"/>
+  <path id="jdk.classpath.1.8">
+    <fileset dir="${jdk.home.1.8}">
+      <include name="../java-1.8.0-openjdk-amd64/jre/lib/charsets.jar"/>
+      <include name="../java-1.8.0-openjdk-amd64/jre/lib/ext/cldrdata.jar"/>
+      <include name="../java-1.8.0-openjdk-amd64/jre/lib/ext/dnsns.jar"/>
+      <include name="../java-1.8.0-openjdk-amd64/jre/lib/ext/icedtea-sound.jar"/>
+      <include name="../java-1.8.0-openjdk-amd64/jre/lib/ext/jaccess.jar"/>
+      <include name="../java-1.8.0-openjdk-amd64/jre/lib/ext/java-atk-wrapper.jar"/>
+      <include name="../java-1.8.0-openjdk-amd64/jre/lib/ext/localedata.jar"/>
+      <include name="../java-1.8.0-openjdk-amd64/jre/lib/ext/nashorn.jar"/>
+      <include name="../java-1.8.0-openjdk-amd64/jre/lib/ext/sunec.jar"/>
+      <include name="../java-1.8.0-openjdk-amd64/jre/lib/ext/sunjce_provider.jar"/>
+      <include name="../java-1.8.0-openjdk-amd64/jre/lib/ext/sunpkcs11.jar"/>
+      <include name="../java-1.8.0-openjdk-amd64/jre/lib/ext/zipfs.jar"/>
+      <include name="../java-1.8.0-openjdk-amd64/jre/lib/jce.jar"/>
+      <include name="../java-1.8.0-openjdk-amd64/jre/lib/jsse.jar"/>
+      <include name="../java-1.8.0-openjdk-amd64/jre/lib/management-agent.jar"/>
+      <include name="../java-1.8.0-openjdk-amd64/jre/lib/resources.jar"/>
+      <include name="../java-1.8.0-openjdk-amd64/jre/lib/rt.jar"/>
+    </fileset>
+  </path>
+  
+  <property name="project.jdk.home" value="${jdk.home.1.8}"/>
+  <property name="project.jdk.bin" value="${jdk.bin.1.8}"/>
+  <property name="project.jdk.classpath" value="jdk.classpath.1.8"/>
+  
+  
+  <!-- Project Libraries -->
+  
+  <path id="library.gradle:_junit:junit:4.12.classpath">
+    <pathelement location="${basedir}/../../.gradle/caches/modules-2/files-2.1/junit/junit/4.12/2973d150c0dc1fefe998f834810d68f278ea58ec/junit-4.12.jar"/>
+  </path>
+  <!-- Register Custom Compiler Taskdefs -->
+  <property name="javac2.home" value="${idea.home}/lib"/>
+  <path id="javac2.classpath">
+    <fileset dir="${javac2.home}">
+      <include name="javac2.jar"/>
+      <include name="jdom.jar"/>
+      <include name="asm-all*.jar"/>
+      <include name="jgoodies-forms.jar"/>
+    </fileset>
+  </path>
+  <target name="register.custom.compilers">
+    <taskdef name="javac2" classname="com.intellij.ant.Javac2" classpathref="javac2.classpath"/>
+    <taskdef name="instrumentIdeaExtensions" classname="com.intellij.ant.InstrumentIdeaExtensions" classpathref="javac2.classpath"/>
+  </target>
+  
+  <!-- Modules -->
+  
+  
+  <!-- Module DotsAndBoxes -->
+  
+  <dirname property="module.dotsandboxes.basedir" file="${ant.file}"/>
+  
+  
+  <property name="module.jdk.home.dotsandboxes" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.dotsandboxes" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.dotsandboxes" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.dotsandboxes" value="-encoding UTF-8 -source 8 -target 8 ${compiler.args}"/>
+  
+  <property name="dotsandboxes.output.dir" value="${module.dotsandboxes.basedir}/out/production/DotsAndBoxes"/>
+  <property name="dotsandboxes.testoutput.dir" value="${module.dotsandboxes.basedir}/out/test/DotsAndBoxes"/>
+  
+  <path id="dotsandboxes.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="dotsandboxes.module.production.classpath">
+    <path refid="${module.jdk.classpath.dotsandboxes}"/>
+  </path>
+  
+  <path id="dotsandboxes.runtime.production.module.classpath">
+    <pathelement location="${dotsandboxes.output.dir}"/>
+  </path>
+  
+  <path id="dotsandboxes.module.classpath">
+    <path refid="${module.jdk.classpath.dotsandboxes}"/>
+    <pathelement location="${dotsandboxes.output.dir}"/>
+  </path>
+  
+  <path id="dotsandboxes.runtime.module.classpath">
+    <pathelement location="${dotsandboxes.testoutput.dir}"/>
+    <pathelement location="${dotsandboxes.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.dotsandboxes">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.dotsandboxes">
+    <patternset refid="excluded.from.module.dotsandboxes"/>
+  </patternset>
+  
+  
+  <target name="compile.module.dotsandboxes" depends="compile.module.dotsandboxes.production,compile.module.dotsandboxes.tests" description="Compile module DotsAndBoxes"/>
+  
+  <target name="compile.module.dotsandboxes.production" depends="register.custom.compilers" description="Compile module DotsAndBoxes; production classes"/>
+  
+  <target name="compile.module.dotsandboxes.tests" depends="register.custom.compilers,compile.module.dotsandboxes.production" description="compile module DotsAndBoxes; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.dotsandboxes" description="cleanup module">
+    <delete dir="${dotsandboxes.output.dir}"/>
+    <delete dir="${dotsandboxes.testoutput.dir}"/>
+  </target>
+  
+  
+  <!-- Module DotsAndBoxes_main -->
+  
+  <dirname property="module.dotsandboxes_main.basedir" file="${ant.file}"/>
+  
+  
+  <property name="module.jdk.home.dotsandboxes_main" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.dotsandboxes_main" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.dotsandboxes_main" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.dotsandboxes_main" value="-encoding UTF-8 -source 8 -target 1.8 ${compiler.args}"/>
+  
+  <property name="dotsandboxes_main.output.dir" value="${module.dotsandboxes_main.basedir}/out/production/classes"/>
+  <property name="dotsandboxes_main.testoutput.dir" value="${module.dotsandboxes_main.basedir}/out/production/classes"/>
+  
+  <path id="dotsandboxes_main.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="dotsandboxes_main.module.production.classpath">
+    <path refid="${module.jdk.classpath.dotsandboxes_main}"/>
+  </path>
+  
+  <path id="dotsandboxes_main.runtime.production.module.classpath">
+    <pathelement location="${dotsandboxes_main.output.dir}"/>
+  </path>
+  
+  <path id="dotsandboxes_main.module.classpath">
+    <path refid="${module.jdk.classpath.dotsandboxes_main}"/>
+    <pathelement location="${dotsandboxes_main.output.dir}"/>
+  </path>
+  
+  <path id="dotsandboxes_main.runtime.module.classpath">
+    <pathelement location="${dotsandboxes_main.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.dotsandboxes_main">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.dotsandboxes_main">
+    <patternset refid="excluded.from.module.dotsandboxes_main"/>
+  </patternset>
+  
+  <path id="dotsandboxes_main.module.sourcepath">
+    <dirset dir="${module.dotsandboxes_main.basedir}/src/main">
+      <include name="java"/>
+      <include name="resources"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.dotsandboxes_main" depends="compile.module.dotsandboxes_main.production,compile.module.dotsandboxes_main.tests" description="Compile module DotsAndBoxes_main"/>
+  
+  <target name="compile.module.dotsandboxes_main.production" depends="register.custom.compilers" description="Compile module DotsAndBoxes_main; production classes">
+    <mkdir dir="${dotsandboxes_main.output.dir}"/>
+    <javac2 destdir="${dotsandboxes_main.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.dotsandboxes_main}/javac">
+      <compilerarg line="${compiler.args.dotsandboxes_main}"/>
+      <bootclasspath refid="dotsandboxes_main.module.bootclasspath"/>
+      <classpath refid="dotsandboxes_main.module.production.classpath"/>
+      <src refid="dotsandboxes_main.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.dotsandboxes_main"/>
+    </javac2>
+    
+    <copy todir="${dotsandboxes_main.output.dir}">
+      <fileset dir="${module.dotsandboxes_main.basedir}/src/main/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.dotsandboxes_main.basedir}/src/main/resources">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.dotsandboxes_main.tests" depends="register.custom.compilers,compile.module.dotsandboxes_main.production" description="compile module DotsAndBoxes_main; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.dotsandboxes_main" description="cleanup module">
+    <delete dir="${dotsandboxes_main.output.dir}"/>
+    <delete dir="${dotsandboxes_main.testoutput.dir}"/>
+  </target>
+  
+  
+  <!-- Module DotsAndBoxes_test -->
+  
+  <dirname property="module.dotsandboxes_test.basedir" file="${ant.file}"/>
+  
+  
+  <property name="module.jdk.home.dotsandboxes_test" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.dotsandboxes_test" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.dotsandboxes_test" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.dotsandboxes_test" value="-encoding UTF-8 -source 8 -target 1.8 ${compiler.args}"/>
+  
+  <property name="dotsandboxes_test.output.dir" value="undefined"/>
+  <property name="dotsandboxes_test.testoutput.dir" value="${module.dotsandboxes_test.basedir}/out/test/classes"/>
+  
+  <path id="dotsandboxes_test.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="dotsandboxes_test.module.production.classpath">
+    <path refid="${module.jdk.classpath.dotsandboxes_test}"/>
+    <path refid="library.gradle:_junit:junit:4.12.classpath"/>
+  </path>
+  
+  <path id="dotsandboxes_test.runtime.production.module.classpath">
+    <path refid="library.gradle:_junit:junit:4.12.classpath"/>
+  </path>
+  
+  <path id="dotsandboxes_test.module.classpath">
+    <path refid="${module.jdk.classpath.dotsandboxes_test}"/>
+    <path refid="library.gradle:_junit:junit:4.12.classpath"/>
+    <pathelement location="${idea.home}/lib/hamcrest-core-1.3.jar"/>
+    <pathelement location="${idea.home}/lib/junit-4.12.jar"/>
+    <pathelement location="${dotsandboxes_main.output.dir}"/>
+  </path>
+  
+  <path id="dotsandboxes_test.runtime.module.classpath">
+    <pathelement location="${dotsandboxes_test.testoutput.dir}"/>
+    <path refid="library.gradle:_junit:junit:4.12.classpath"/>
+    <pathelement location="${idea.home}/lib/hamcrest-core-1.3.jar"/>
+    <pathelement location="${idea.home}/lib/junit-4.12.jar"/>
+    <path refid="dotsandboxes_main.runtime.module.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.dotsandboxes_test">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.dotsandboxes_test">
+    <patternset refid="excluded.from.module.dotsandboxes_test"/>
+  </patternset>
+  
+  <path id="dotsandboxes_test.module.test.sourcepath">
+    <dirset dir="${module.dotsandboxes_test.basedir}/src/test">
+      <include name="java"/>
+      <include name="resources"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.dotsandboxes_test" depends="compile.module.dotsandboxes_test.production,compile.module.dotsandboxes_test.tests" description="Compile module DotsAndBoxes_test"/>
+  
+  <target name="compile.module.dotsandboxes_test.production" depends="register.custom.compilers,compile.module.dotsandboxes_main" description="Compile module DotsAndBoxes_test; production classes"/>
+  
+  <target name="compile.module.dotsandboxes_test.tests" depends="register.custom.compilers,compile.module.dotsandboxes_test.production" description="compile module DotsAndBoxes_test; test classes" unless="skip.tests">
+    <mkdir dir="${dotsandboxes_test.testoutput.dir}"/>
+    <javac2 destdir="${dotsandboxes_test.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.dotsandboxes_test}/javac">
+      <compilerarg line="${compiler.args.dotsandboxes_test}"/>
+      <bootclasspath refid="dotsandboxes_test.module.bootclasspath"/>
+      <classpath refid="dotsandboxes_test.module.classpath"/>
+      <src refid="dotsandboxes_test.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.dotsandboxes_test"/>
+    </javac2>
+    
+    <copy todir="${dotsandboxes_test.testoutput.dir}">
+      <fileset dir="${module.dotsandboxes_test.basedir}/src/test/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.dotsandboxes_test.basedir}/src/test/resources">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.dotsandboxes_test" description="cleanup module">
+    <delete dir="${dotsandboxes_test.output.dir}"/>
+    <delete dir="${dotsandboxes_test.testoutput.dir}"/>
+  </target>
+  
+  <target name="init" description="Build initialization">
+    <!-- Perform any build initialization in this target -->
+  </target>
+  
+  <target name="clean" depends="clean.module.dotsandboxes, clean.module.dotsandboxes_main, clean.module.dotsandboxes_test" description="cleanup all"/>
+  
+  <target name="build.modules" depends="init, clean, compile.module.dotsandboxes, compile.module.dotsandboxes_main, compile.module.dotsandboxes_test" description="build all modules"/>
+  
+  <target name="all" depends="build.modules" description="build all"/>
+</project>

@@ -23,8 +23,12 @@ public class GameManager {
     public IA ia;
     public boolean playerTurn, isAiPlaying;
 
-    public GameManager(int size, GAME_MODE game_mode){ //no IA
-        b = new Board(size);
+    public GameManager(int size, GAME_MODE game_mode, String savedFile){ //no IA
+        if(savedFile != null){
+            b = Board.loadGame(savedFile);
+        }else {
+            b = new Board(size);
+        }
         players = new Player[2];
         players[0] = new Player(1, "Player1");
         players[1] = new Player(2, "Player2");
@@ -35,8 +39,12 @@ public class GameManager {
     }
 
     public GameManager(int size, IA.Mode iaMode, int maxDepth,
-                       long totalTime, boolean prune, GAME_MODE game_mode){
-        b = new Board(size);
+                       long totalTime, boolean prune, GAME_MODE game_mode, String savedFile){
+        if(savedFile != null){
+            b = Board.loadGame(savedFile);
+        }else {
+            b = new Board(size);
+        }
         players = new Player[] {new Player(1,"Player1"), new Player(2, "Player2")};
         if(game_mode == GAME_MODE.HVSH){
             activePlayer = players[0];

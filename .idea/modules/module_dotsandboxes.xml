@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_dotsandboxes" default="compile.module.dotsandboxes">
+  <dirname property="module.dotsandboxes.basedir" file="${ant.file.module_dotsandboxes}"/>
+  
+  <property name="module.jdk.home.dotsandboxes" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.dotsandboxes" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.dotsandboxes" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.dotsandboxes" value="-encoding UTF-8 -source 8 -target 8 ${compiler.args}"/>
+  
+  <property name="dotsandboxes.output.dir" value="${module.dotsandboxes.basedir}/../../out/production/DotsAndBoxes"/>
+  <property name="dotsandboxes.testoutput.dir" value="${module.dotsandboxes.basedir}/../../out/test/DotsAndBoxes"/>
+  
+  <path id="dotsandboxes.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="dotsandboxes.module.production.classpath">
+    <path refid="${module.jdk.classpath.dotsandboxes}"/>
+  </path>
+  
+  <path id="dotsandboxes.runtime.production.module.classpath">
+    <pathelement location="${dotsandboxes.output.dir}"/>
+  </path>
+  
+  <path id="dotsandboxes.module.classpath">
+    <path refid="${module.jdk.classpath.dotsandboxes}"/>
+    <pathelement location="${dotsandboxes.output.dir}"/>
+  </path>
+  
+  <path id="dotsandboxes.runtime.module.classpath">
+    <pathelement location="${dotsandboxes.testoutput.dir}"/>
+    <pathelement location="${dotsandboxes.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.dotsandboxes">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.dotsandboxes">
+    <patternset refid="excluded.from.module.dotsandboxes"/>
+  </patternset>
+  
+  
+  <target name="compile.module.dotsandboxes" depends="compile.module.dotsandboxes.production,compile.module.dotsandboxes.tests" description="Compile module DotsAndBoxes"/>
+  
+  <target name="compile.module.dotsandboxes.production" depends="register.custom.compilers" description="Compile module DotsAndBoxes; production classes"/>
+  
+  <target name="compile.module.dotsandboxes.tests" depends="register.custom.compilers,compile.module.dotsandboxes.production" description="compile module DotsAndBoxes; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.dotsandboxes" description="cleanup module">
+    <delete dir="${dotsandboxes.output.dir}"/>
+    <delete dir="${dotsandboxes.testoutput.dir}"/>
+  </target>
+</project>

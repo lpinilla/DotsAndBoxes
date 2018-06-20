@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_dotsandboxes_main" default="compile.module.dotsandboxes_main">
+  <dirname property="module.dotsandboxes_main.basedir" file="${ant.file.module_dotsandboxes_main}"/>
+  
+  <property name="module.jdk.home.dotsandboxes_main" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.dotsandboxes_main" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.dotsandboxes_main" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.dotsandboxes_main" value="-encoding UTF-8 -source 8 -target 1.8 ${compiler.args}"/>
+  
+  <property name="dotsandboxes_main.output.dir" value="${module.dotsandboxes_main.basedir}/../../out/production/classes"/>
+  <property name="dotsandboxes_main.testoutput.dir" value="${module.dotsandboxes_main.basedir}/../../out/production/classes"/>
+  
+  <path id="dotsandboxes_main.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="dotsandboxes_main.module.production.classpath">
+    <path refid="${module.jdk.classpath.dotsandboxes_main}"/>
+  </path>
+  
+  <path id="dotsandboxes_main.runtime.production.module.classpath">
+    <pathelement location="${dotsandboxes_main.output.dir}"/>
+  </path>
+  
+  <path id="dotsandboxes_main.module.classpath">
+    <path refid="${module.jdk.classpath.dotsandboxes_main}"/>
+    <pathelement location="${dotsandboxes_main.output.dir}"/>
+  </path>
+  
+  <path id="dotsandboxes_main.runtime.module.classpath">
+    <pathelement location="${dotsandboxes_main.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.dotsandboxes_main">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.dotsandboxes_main">
+    <patternset refid="excluded.from.module.dotsandboxes_main"/>
+  </patternset>
+  
+  <path id="dotsandboxes_main.module.sourcepath">
+    <dirset dir="${module.dotsandboxes_main.basedir}/../../src/main">
+      <include name="java"/>
+      <include name="resources"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.dotsandboxes_main" depends="compile.module.dotsandboxes_main.production,compile.module.dotsandboxes_main.tests" description="Compile module DotsAndBoxes_main"/>
+  
+  <target name="compile.module.dotsandboxes_main.production" depends="register.custom.compilers" description="Compile module DotsAndBoxes_main; production classes">
+    <mkdir dir="${dotsandboxes_main.output.dir}"/>
+    <javac2 destdir="${dotsandboxes_main.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.dotsandboxes_main}/javac">
+      <compilerarg line="${compiler.args.dotsandboxes_main}"/>
+      <bootclasspath refid="dotsandboxes_main.module.bootclasspath"/>
+      <classpath refid="dotsandboxes_main.module.production.classpath"/>
+      <src refid="dotsandboxes_main.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.dotsandboxes_main"/>
+    </javac2>
+    
+    <copy todir="${dotsandboxes_main.output.dir}">
+      <fileset dir="${module.dotsandboxes_main.basedir}/../../src/main/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.dotsandboxes_main.basedir}/../../src/main/resources">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.dotsandboxes_main.tests" depends="register.custom.compilers,compile.module.dotsandboxes_main.production" description="compile module DotsAndBoxes_main; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.dotsandboxes_main" description="cleanup module">
+    <delete dir="${dotsandboxes_main.output.dir}"/>
+    <delete dir="${dotsandboxes_main.testoutput.dir}"/>
+  </target>
+</project>

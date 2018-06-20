@@ -27,14 +27,14 @@ public class GameUI2 extends  JPanel{
     static JPanel infoContainer;
 
 
-    //GameUI2(new Integer(args[0]), game_mode, iamode, maxDepth, maxTime, pruneActive);
+
     public GameUI2(int size, GameManager.GAME_MODE game_mode, IA.Mode mode, int maxDepth, long maxtime,
-                   boolean isPruneActive){ //se mira no se toca
+                   boolean isPruneActive, String savedFile){ //se mira no se toca
         boardSize = size;
         if(game_mode == GameManager.GAME_MODE.HVSH){
-            gm = new GameManager(size -1, game_mode);
+            gm = new GameManager(size -1, game_mode, savedFile);
         }else {
-            gm = new GameManager(size - 1, mode, maxDepth, maxtime, isPruneActive, game_mode);
+            gm = new GameManager(size - 1, mode, maxDepth, maxtime, isPruneActive, game_mode, savedFile);
         }
         backBoard = gm.getBoard();
 
@@ -183,6 +183,9 @@ public class GameUI2 extends  JPanel{
 
     //argumentos: size ; gameMode ; aiMode; depth/time, prune, load
     public static void main(String[] args){ //length = 6
+        for (int i = 0; i < args.length; i++) {
+            System.out.println(args[i]);
+        }
         switch (args[1]){
             case "0":
                 game_mode = GameManager.GAME_MODE.HVSH;
@@ -217,7 +220,7 @@ public class GameUI2 extends  JPanel{
             pruneActive = false;
         }
         JFrame frame = new JFrame("Dots and Boxes");
-        GameUI2 ui = new GameUI2(new Integer(args[0]), game_mode, iamode, maxDepth, maxTime, pruneActive);
+        GameUI2 ui = new GameUI2(new Integer(args[0]), game_mode, iamode, maxDepth, maxTime, pruneActive, args[5]);
         frame.getContentPane().add(ui);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setMinimumSize(new Dimension(820,900));
