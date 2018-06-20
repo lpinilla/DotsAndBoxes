@@ -84,37 +84,39 @@ public class IA {
 
     //ver si hay que modificarlo para que sirva también para timeMinimax
     private Solution dMinimax(Board b, int currDepth, int maxDepth, boolean isMax,
-                              int alpha, int beta, Map<Board,Integer> map){
-        if(currDepth == maxDepth){
+                              int alpha, int beta, Map<Board,Integer> map) {
+        if (!b.hasRemainingPlays(b) || currDepth == maxDepth) {
             int score = evaluate2(b);
             map.put(b, score);
             return new Solution(b, score);
         }
         int bestVal;
-        Solution bestSol = null, aux;
+        Solution bestSol = null, aux = null;
         StringBuffer dotBuilderCurrentBoard = new StringBuffer(), dotBuilderNewBoard = new StringBuffer();
-        if(isMax) {
+        if (isMax) {
             bestVal = Integer.MIN_VALUE;
             for (Board nBoard : b.getPossibleMoves(b, this.color)) {
                 //dot file print
                 b.asciiPrintBoard(dotBuilderCurrentBoard);
                 nBoard.asciiPrintBoard(dotBuilderNewBoard);
                 dotFileBuilder.offer("\"" + dotBuilderCurrentBoard + "\"" + "->" +
-                                        "\"" + dotBuilderNewBoard + "\"");
+                        "\"" + dotBuilderNewBoard + "\"");
 
-                if(!map.containsKey(nBoard)) {
+                /*if (!map.containsKey(nBoard)) {
                     aux = dMinimax(nBoard, currDepth + 1, maxDepth, false, alpha, beta, map);
                     map.put(nBoard, aux.score);
-                }else{
+                } else {
                     aux = new Solution(nBoard, map.get(nBoard));
-                }
-                if(aux != null &&  (bestSol == null || bestVal < aux.score)){
+                }*/
+                aux = dMinimax(nBoard, currDepth + 1, maxDepth, false, alpha, beta, map);
+                if ((bestSol == null || (aux != null && bestVal < aux.score))) {
                     dotFileBuilder.offer("\"" + dotBuilderNewBoard + "\"" + "[style=filled,color=green]");
                     bestVal = aux.score;
                     bestSol = new Solution(nBoard, bestVal);
                 }
+
                 alpha = Math.max(alpha, bestVal);
-                if(this.prune && beta <= alpha){
+                if (this.prune && beta <= alpha) {
                     dotFileBuilder.offer("\"" + dotBuilderNewBoard + "\"" + "[style=filled,color=red]");
                     break;
                 }
@@ -122,10 +124,10 @@ public class IA {
                 dotBuilderNewBoard = new StringBuffer();
             }
             return bestSol;
-        }else {
+        } else {
             bestVal = Integer.MAX_VALUE;
-            bestSol = null;
-            aux = null;
+            //bestSol = null;
+            //aux = null;
             for (Board nBoard : b.getPossibleMoves(b, otherPlayerColor)) {
 
                 b.asciiPrintBoard(dotBuilderCurrentBoard);
@@ -133,19 +135,24 @@ public class IA {
                 dotFileBuilder.offer("\"" + dotBuilderCurrentBoard + "\"" + "->" +
                         "\"" + dotBuilderNewBoard + "\"");
 
-                if(!map.containsKey(nBoard)) {
+
+                /*if (!map.containsKey(nBoard)) {
                     aux = dMinimax(nBoard, currDepth + 1, maxDepth, true, alpha, beta, map);
-                    map.put(nBoard, aux.score);
-                }else{
+                    /map.put(nBoard, aux.score);
+                } else {
                     aux = new Solution(nBoard, map.get(nBoard));
+                }*/
+                aux = dMinimax(nBoard, currDepth + 1, maxDepth, true, alpha, beta, map);
+                if(aux != null) {
+                    if ((bestSol == null || ( bestVal > aux.score))) {
+                        dotFileBuilder.offer("\"" + dotBuilderNewBoard + "\"" + "[style=filled,color=blue]");
+                        bestVal = aux.score;
+                        bestSol = aux;
+                    }
                 }
-                if (aux != null && (bestSol == null || bestVal > aux.score)) {
-                    dotFileBuilder.offer("\"" + dotBuilderNewBoard + "\"" + "[style=filled,color=blue]");
-                    bestVal = aux.score;
-                    bestSol = aux;
-                }
+
                 beta = Math.min(beta, bestVal);
-                if(prune && beta <= alpha){
+                if (prune && beta <= alpha) {
                     dotFileBuilder.offer("\"" + dotBuilderNewBoard + "\"" + "[style=filled,color=red]");
                     break;
                 }
@@ -166,8 +173,10 @@ public class IA {
                 if(hasTime(maxTime)) {
                     aux = dMinimax(b, 0, depth, true, Integer.MIN_VALUE, Integer.MAX_VALUE, map);
                 }
-                if(bestSol == null || (aux != null && aux.score > bestSol.score)){
-                    bestSol = aux;
+                if(aux != null) {
+                    if (bestSol == null || (aux.score > bestSol.score)) {
+                        bestSol = aux;
+                    }
                 }
             }
             MAXDEPTH++;
