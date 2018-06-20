@@ -111,7 +111,7 @@ public class IA {
                 if(aux != null &&  (bestSol == null || bestVal < aux.score)){
                     dotFileBuilder.offer("\"" + dotBuilderNewBoard + "\"" + "[style=filled,color=green]");
                     bestVal = aux.score;
-                    bestSol = aux;
+                    bestSol = new Solution(nBoard, bestVal);
                 }
                 alpha = Math.max(alpha, bestVal);
                 if(this.prune && beta <= alpha){
@@ -180,27 +180,6 @@ public class IA {
 
     private boolean hasTime(long maxTime){
         return System.currentTimeMillis() <= maxTime;
-    }
-
-    private void createDotFileEntry(Board curr, Board newBoard,
-                                    String dotBuilderCurrentBoard,String dotBuilderNewBoard){
-        changeOutputStream();
-        curr.asciiPrintBoard(new StringBuffer());
-        dotBuilderCurrentBoard = baos.toString();
-        System.out.flush();
-        newBoard.asciiPrintBoard(new StringBuffer());
-        dotBuilderNewBoard = baos.toString();
-        resetOutputStream();
-        dotFileBuilder.offer(dotBuilderCurrentBoard + "->" + dotBuilderNewBoard);
-    }
-    private void changeOutputStream(){
-        original = System.out;
-        System.setOut(ps);
-    }
-
-    private void resetOutputStream(){
-        System.out.flush();
-        System.setOut(original);
     }
 
     public void saveDOTFile(){

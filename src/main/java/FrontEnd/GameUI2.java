@@ -11,7 +11,7 @@ import java.awt.event.ActionListener;
 
 public class GameUI2 extends  JPanel{
 
-    private JButton undoButton, playButton;
+    private JButton undoButton, playButton, saveGame, saveDot;
     private JComboBox xCoor, yCoor, dir;
     static private JLabel label;
     private JPanel Drawable;
@@ -52,6 +52,8 @@ public class GameUI2 extends  JPanel{
         dir = new JComboBox();
         undoButton = new JButton();
         playButton = new JButton();
+        saveGame = new JButton();
+        saveDot = new JButton();
         populateComboBox(xCoor, aux);
         populateComboBox(yCoor, aux);
         populateComboBox(dir, new String[] {"TOP", "RIGHT", "BOTTOM", "LEFT"});
@@ -70,8 +72,7 @@ public class GameUI2 extends  JPanel{
         //label, saveGame and DOT File
         JPanel firstPanel = new JPanel();
         firstPanel.add(label, BorderLayout.LINE_START);
-        JButton saveGame = new JButton();
-        JButton saveDot = new JButton();
+
         saveGame.setMinimumSize(new Dimension(150,20));
         saveGame.setPreferredSize(new Dimension(150,20));
         saveGame.setText("Save Game");
@@ -86,19 +87,7 @@ public class GameUI2 extends  JPanel{
         label.setHorizontalAlignment(0);
         label.repaint();
 
-        saveGame.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                backBoard.saveGame("Save" + Integer.toString(nOfSave++));
-            }
-        });
 
-        saveDot.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                gm.ia.saveDOTFile();
-            }
-        });
 
         JPanel auxPanel1 = new JPanel();
         auxPanel1.setLayout(new BorderLayout());
@@ -141,7 +130,21 @@ public class GameUI2 extends  JPanel{
         infoContainer.setBackground(Color.YELLOW); //testing purposes
 
 
+        saveGame.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                backBoard.saveGame("Save" + Integer.toString(nOfSave++));
+                System.out.println("yay");
 
+            }
+        });
+
+        saveDot.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                gm.ia.saveDOTFile();
+            }
+        });
         //---------------------------------------------------------------BOTON PARA JUGAR
         playButton.addActionListener(new ActionListener() {
             @Override
@@ -183,9 +186,6 @@ public class GameUI2 extends  JPanel{
 
     //argumentos: size ; gameMode ; aiMode; depth/time, prune, load
     public static void main(String[] args){ //length = 6
-        for (int i = 0; i < args.length; i++) {
-            System.out.println(args[i]);
-        }
         switch (args[1]){
             case "0":
                 game_mode = GameManager.GAME_MODE.HVSH;
@@ -220,13 +220,18 @@ public class GameUI2 extends  JPanel{
             pruneActive = false;
         }
         JFrame frame = new JFrame("Dots and Boxes");
-        GameUI2 ui = new GameUI2(new Integer(args[0]), game_mode, iamode, maxDepth, maxTime, pruneActive, args[5]);
+        GameUI2 ui = null;
+        if(args.length == 5){
+            ui = new GameUI2(new Integer(args[0]), game_mode, iamode, maxDepth, maxTime, pruneActive, null);
+        }else if(args.length == 6){
+            ui = new GameUI2(new Integer(args[0]), game_mode, iamode, maxDepth, maxTime, pruneActive, args[5]);
+        }
+
         frame.getContentPane().add(ui);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setMinimumSize(new Dimension(820,900));
         frame.setPreferredSize(new Dimension(820,900));
         frame.setLocation(650,100);
-        //frame.pack(); //me cambia to-do
         frame.setVisible(true);
         frame.add(infoContainer, BorderLayout.NORTH);
         infoContainer.repaint();

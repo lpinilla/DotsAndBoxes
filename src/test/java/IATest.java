@@ -18,7 +18,7 @@ public class IATest {
 
     @Before
     public void before(){
-        gm = new GameManager(2, IA.Mode.DEPTH, 1,0,true, GameManager.GAME_MODE.HVSAI);
+        gm = new GameManager(2, IA.Mode.DEPTH, 1,0,true, GameManager.GAME_MODE.HVSAI, null);
         jarvis = new IA(gm.getBoard(), IA.Mode.DEPTH, 1, 0, 1,2, false);
     }
 
@@ -203,6 +203,16 @@ public class IATest {
         System.setOut(old);
         //print
         assertEquals(baos.toString(), baos.toString());
+    }
+
+    @Test
+    public void multipleDepthTest(){
+        Board b2 = new Board(2);
+        b2.makeMove(b2, 0,0, Board.DIRECTIONS.TOP,1 );
+        jarvis = new IA(b2, IA.Mode.DEPTH,3,0,2,1,false);
+        Board best = jarvis.miniMax();
+        System.out.println("BEST");
+        best.asciiPrintBoard(new StringBuffer());
     }
 
 }
