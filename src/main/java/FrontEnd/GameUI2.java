@@ -80,12 +80,28 @@ public class GameUI2 extends  JPanel{
         saveDot.setMinimumSize(new Dimension(150,20));
         saveDot.setPreferredSize(new Dimension(150,20));
         saveDot.setText("Save Dot File");
+        saveGame.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                callSaveMethod();
+            }
+        });
+
+        saveDot.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                callSaveDotFile("minimaxDotFile");
+            }
+        });
         //saveGame.repaint();
         firstPanel.add(saveGame, BorderLayout.CENTER);
         firstPanel.add(saveDot, BorderLayout.PAGE_END);
         infoContainer.add(firstPanel, BorderLayout.PAGE_START);
         label.setHorizontalAlignment(0);
         label.repaint();
+
+
+
 
 
 
@@ -130,21 +146,7 @@ public class GameUI2 extends  JPanel{
         infoContainer.setBackground(Color.YELLOW); //testing purposes
 
 
-        saveGame.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                backBoard.saveGame("Save" + Integer.toString(nOfSave++));
-                System.out.println("yay");
 
-            }
-        });
-
-        saveDot.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                gm.ia.saveDOTFile();
-            }
-        });
         //---------------------------------------------------------------BOTON PARA JUGAR
         playButton.addActionListener(new ActionListener() {
             @Override
@@ -225,6 +227,7 @@ public class GameUI2 extends  JPanel{
             ui = new GameUI2(new Integer(args[0]), game_mode, iamode, maxDepth, maxTime, pruneActive, null);
         }else if(args.length == 6){
             ui = new GameUI2(new Integer(args[0]), game_mode, iamode, maxDepth, maxTime, pruneActive, args[5]);
+            infoContainer.repaint();
         }
 
         frame.getContentPane().add(ui);
@@ -396,5 +399,13 @@ public class GameUI2 extends  JPanel{
     private static void showLabel(){
         label.setText(gm.whoIsActivePlayer());
         label.repaint();
+    }
+
+    private static void callSaveDotFile(String name){
+        gm.ia.saveDOTFile(name);
+    }
+
+    private static void callSaveMethod(){
+        backBoard.saveGame("Save" + Integer.toString(nOfSave++));
     }
 }

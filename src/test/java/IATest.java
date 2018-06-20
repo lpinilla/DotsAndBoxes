@@ -178,31 +178,7 @@ public class IATest {
         b2.makeMove(b2, 0,1,Board.DIRECTIONS.LEFT, 1);
         b2.makeMove(b2, 0,1,Board.DIRECTIONS.BOTTOM, 1);
         jarvis.miniMax();
-        jarvis.saveDOTFile();
-    }
-
-    @Test
-    public void dotFileAUXTest(){
-        Board b2 = new Board(2);
-        b2.makeMove(b2, 0,0, Board.DIRECTIONS.TOP, 1);
-        // Create a stream to hold the output
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintStream ps = new PrintStream(baos);
-        // Save the old System.out
-
-
-        PrintStream old = System.out;
-        //change out
-        System.setOut(ps);
-        // Print some output: goes to your special stream
-        b2.asciiPrintBoard(new StringBuffer());
-
-
-        // Put things back
-        System.out.flush(); //discard
-        System.setOut(old);
-        //print
-        assertEquals(baos.toString(), baos.toString());
+        jarvis.saveDOTFile("dotTest");
     }
 
     @Test

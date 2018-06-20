@@ -2,10 +2,7 @@ package Backend;
 
 import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -191,14 +188,17 @@ public class IA {
         return System.currentTimeMillis() <= maxTime;
     }
 
-    public void saveDOTFile(){
+    public  void saveDOTFile(String name){
+
         try{
-            PrintWriter writer = new PrintWriter("src/main/java/SavedGames/TreeSave.dot", "UTF-8");
+            File f = new File("src/main/java/SavedGames/" + name + ".dot");
+            f.createNewFile();
+            PrintWriter writer = new PrintWriter(f, "UTF-8");
             while(!dotFileBuilder.isEmpty()){
                 writer.println(dotFileBuilder.poll());
             }
             writer.close();
-        }catch(IOException e){
+        }catch(Exception e){
             e.getMessage(); //tal vez hacer algo con la exception;
         }
     }

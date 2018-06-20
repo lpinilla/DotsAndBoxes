@@ -388,8 +388,9 @@ public class Board {
     }
 
     public void saveGame(String fileName){
+        PrintWriter writer;
         try {
-            PrintWriter writer = new PrintWriter("src/main/java/SavedGames/" + fileName + ".txt", "UTF-8");
+            writer = new PrintWriter("src/main/java/SavedGames/" + fileName + ".txt", "UTF-8");
             writer.println(size);
             writer.println(currPlay);
             StringBuffer fila;
@@ -406,6 +407,7 @@ public class Board {
             writer.close();
         }catch (IOException e){
             e.getMessage(); //hacer algo con la exception. (mostrarla en pantalla)?
+            System.out.println(e);
         }
     }
 
